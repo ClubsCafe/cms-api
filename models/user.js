@@ -2,7 +2,9 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const passportLocalMongoose = require('passport-local-mongoose')
 
+
 // requiring other schemas (awards and events here)
+const Event = require('./event')
 /* yet to be created */
 const ImageSchema = new Schema({
     url:String,
@@ -37,16 +39,22 @@ const UserSchema = new Schema ({
     awards:[
         {
             type: Schema.Types.ObjectId,
-            ref: 'awards'
+            ref: 'Award'
         }
     ],
     events: [
         {
             type: Schema.Types.ObjectId,
-            ref: 'events'
+            ref: 'Event'
         }
     ],
+    //points system to consider ranking
+    points:{
+        type:Number,
+        default:0
+    },
     avatar: ImageSchema //for avatars or so called profile pictures
+
 }, { timestamps: true }) //for knowing the date of creationg
 
 

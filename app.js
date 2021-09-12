@@ -8,6 +8,7 @@ const port = process.env.PORT || 5000
 //requiring dependencies
 const express = require('express');
 const app = express();
+const ExpressError=  require('./utilities/ExpressError')
 
 //for overriding methods (via post)
 const methodOverride = require('method-override')
@@ -83,24 +84,38 @@ app.use(async (req,res,next)=>{
 
 /* ROUTES BELOW */
 
-//requiring routes
+/* requiring routes */
+//for normal(any) user Routes especially for logging in
 const userRoutes = require('./routes/users');
+
+//for admin,mods and eventmanager  dashboards
+/* 
+const adminRoutes = require('./routes/admin');
+const modRoutes = require('./routes/mod');
+const eventManagerRoutes = require('./routes/eventmanager');
 
 
 
 //using routes 
 app.use('/users', userRoutes);
+app.use('/admin', adminRoutes);
+app.use('/mods', modRoutes);
+app.use('/eventmanagers', eventManagerRoutes);
 
-
+ */
+/* app.all('*', (req,res,next)=>{
+    next(new ExpressError('Hi from Nitk | Page Not Found | lol currently we have nothing', 404))
+}) */
 
 app.all('*', (req,res,next)=>{
-    next(new ExpressError('Hi from Nitk | Page Not Found | lol currently we have nothing', 404))
+  next(new ExpressError('Page Not Found', 404))
 })
 
 app.use((err,req,res,next)=>{
-    const {statusCode=500, message="something went wrong"} =err;
-    if(!err.message) err.message = "Oh no,Something went wrong."
-    res.status(statusCode).render('error', {err})
+  const {statusCode=500, message="something went wrong"} =err;
+  if(!err.message) err.message = "Oh no,Something went wrong."
+  console.log("err")
+  res.status(statusCode).json(err)/* .send(statusCode, {err}) */
 })
 //starting express api server
 app.listen(port,()=>{
