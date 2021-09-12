@@ -7,36 +7,37 @@ const passportLocalMongoose = require('passport-local-mongoose')
 const Event = require('./event')
 /* yet to be created */
 const ImageSchema = new Schema({
-    url:String,
-   filename: String
+    url: String,
+    filename: String
 })
 
-const UserSchema = new Schema ({
-    email:{
-        type:String,
-        required: [true , "Email cannot be Empty"],
+const UserSchema = new Schema({
+    email: {
+        type: String,
+        required: [true, "Email cannot be Empty"],
         unique: true
     },
     userType: {
-        type:String,
-        required:true,
-        enum: ["admin","eventmanager", "mod", "user"],
+        type: String,
+        required: true,
+        enum: ["admin", "eventmanager", "mod", "user"],
         default: "user"
     },/* 
      eventmanager can create events or we can make it such that 
      any normal user can create events but a mod has to accept those events */
-    dob: { type: Date, 
-        default: Date.now ,
+    dob: {
+        type: Date,
+        default: Date.now,
         required: [true, "DOB cannot be Empty"]
     },
-    name:{
-        type:String,
+    name: {
+        type: String,
         required: [true, "Name cannot be Empty"]
     },
     bio: {
-        type:String,
+        type: String,
     },
-    awards:[
+    awards: [
         {
             type: Schema.Types.ObjectId,
             ref: 'Award'
@@ -49,9 +50,9 @@ const UserSchema = new Schema ({
         }
     ],
     //points system to consider ranking
-    points:{
-        type:Number,
-        default:0
+    points: {
+        type: Number,
+        default: 0
     },
     avatar: ImageSchema //for avatars or so called profile pictures
 
@@ -62,4 +63,4 @@ const UserSchema = new Schema ({
 UserSchema.plugin(passportLocalMongoose);
 
 
-module.exports = mongoose.model('User',UserSchema);
+module.exports = mongoose.model('User', UserSchema);
