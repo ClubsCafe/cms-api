@@ -1,5 +1,5 @@
 ## Events Management System
-A tool managing competitions/events held across NITK,</br>
+A tool managing competitions/events held across NITK.  
 A website where one can showcase his awards, wins or held events. 
 
 ## Technologies used
