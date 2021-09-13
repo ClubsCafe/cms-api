@@ -1,8 +1,8 @@
+require('dotenv').config()
 // defining private urls and secret codes.
 const dbURL = process.env.DB_URL || 'mongodb://localhost:27017/cmsapi';
 const secretCode = process.env.SECRET_CODE || 'NITK_KODE';
 const port = process.env.PORT || 5000
-
 
 //requiring dependencies
 const express = require('express');
@@ -90,32 +90,26 @@ app.use(async (req, res, next) => {
 const userRoutes = require('./routes/users');
 
 //for admin,mods and eventmanager  dashboards
-/* 
+
 const adminRoutes = require('./routes/admin');
 const modRoutes = require('./routes/mod');
-const eventManagerRoutes = require('./routes/eventmanager');
-
+const organizationRoutes = require('./routes/organizations')
+const eventRoutes = require('./routes/events')
+const awardRoutes = require('./routes/awards')
 
 
 //using routes 
 app.use('/users', userRoutes);
-app.use('/admin', adminRoutes);
-app.use('/mods', modRoutes);
-app.use('/eventmanagers', eventManagerRoutes);
+app.use('/organizations', organizationRoutes);
+app.use('/organizations/:organizationId/events', eventRoutes);
+app.use('/organizations/:organizationId/events/:eventId/awards', awardRoutes);
 
- */
-/* app.all('*', (req,res,next)=>{
-    next(new ExpressError('Hi from Nitk | Page Not Found | lol currently we have nothing', 404))
-}) */
 
-app.all('*', (req, res, next) => {
-  next(new ExpressError('Page Not Found', 404))
-})
+
 
 app.use((err, req, res, next) => {
   const { statusCode = 500, message = "something went wrong" } = err;
   if (!err.message) err.message = "Oh no,Something went wrong."
-  console.log("err")
   res.status(statusCode).json(err)/* .send(statusCode, {err}) */
 })
 //starting express api server
