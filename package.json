@@ -4,7 +4,7 @@
   "description": "Website for managing competitions held in college",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon src/app.js",
+    "start": "node src/app.js",
     "dev": "node -r dotenv/config src/app.js",
     "devc": "nodemon -r dotenv/config src/app.js",
     "lint": "npx eslint src",
@@ -20,7 +20,6 @@
     "connect-mongo": "^4.5.0",
     "express": "^4.17.1",
     "express-session": "^1.17.2",
-    "method-override": "^3.0.0",
     "mongoose": "^6.0.5",
     "multer": "^1.4.3",
     "multer-storage-cloudinary": "^4.0.0",
