@@ -5,6 +5,11 @@ const Schema = mongoose.Schema
 const User = require('./user')
 const Event = require('./event')
 
+const ImageSchema = new Schema({
+    url: String,
+    filename: String
+})
+
 const AwardSchema = new Schema({
     title: {
         type: String,
@@ -13,6 +18,8 @@ const AwardSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Event'
     },
+    //can be also reffered to as badge, will be of low pixels so that :_: idk we can set an virtual for reduced sizes. :) 
+    logo:ImageSchema,
     //points for the specifc award
     points: {
         type: Number,

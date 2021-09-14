@@ -5,6 +5,9 @@ const passportLocalMongoose = require('passport-local-mongoose')
 
 // requiring other schemas (awards and events here)
 const Event = require('./event')
+const Award = require('./award')
+const Organization = require('./organization')
+
 /* yet to be created */
 const ImageSchema = new Schema({
     url: String,
@@ -34,8 +37,12 @@ const UserSchema = new Schema({
         type: String,
         required: [true, "Name cannot be Empty"]
     },
+    //basically the bio of a typical sodial media or a short description of themselves
     bio: {
         type: String,
+    },
+    about: {
+        type:String
     },
     awards: [
         {
@@ -54,6 +61,13 @@ const UserSchema = new Schema({
         type: Number,
         default: 0
     },
+    //to specify which organizations one belongs to, could be multiple
+    organizations:[
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Organization'
+        }
+    ],
     avatar: ImageSchema //for avatars or so called profile pictures
 
 }, { timestamps: true }) //for knowing the date of creationg
