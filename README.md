@@ -1,10 +1,7 @@
 <h1 align="center">Welcome to  CMS-API👋</h1>
 <p>
-  <a href="https://www.npmjs.com/package/" target="_blank">
-    <img alt="Version" src="https://img.shields.io/npm/v/.svg">
-  </a>
   <a href="https://github.com/NITK-KODE/cms-api" target="_blank">
-    <img alt="Documentation" src="https://img.shields.io/badge/documentation-yes-brightgreen.svg" />
+    <img alt="Documentation" src="https://img.shields.io/badge/documentation-no-yellow.svg" />
   </a>
   <a href="#" target="_blank">
     <img alt="License: ISC" src="https://img.shields.io/badge/License-ISC-yellow.svg" />
