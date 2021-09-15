@@ -1,7 +1,7 @@
 {
-  "name": "competition-management-system",
+  "name": "cms-api",
   "version": "1.0.0",
-  "description": "Website for managing competitions held in college",
+  "description": "A website for creating and managing events held by clubs or organizations in colleges",
   "main": "index.js",
   "scripts": {
     "start": "node src/app.js",
