@@ -12,23 +12,37 @@
 
 ### 🏠 [Homepage](https://github.com/NITK-KODE/cms-api)
 
-## Install
+##  Local Development Environment Setup
 
+### Install all dependencies
 ```sh
 npm install
 ```
 
-## Usage
+### Configure Environment Variables
+set your environment variables in a `.env` file, use `.env.sample` for reference
 
+### Run the development server
 ```sh
-npm run start
+npm run dev
 ```
 
-## Run tests
-
+To run server with live reload enabled use
 ```sh
 npm run devc
 ```
+
+### Linting and Formatting
+
+to lint the code 
+```sh
+npm run lint
+```
+To fix auto fixable lint issues use 
+```sh
+npm run format
+```
+Make sure to format your code before submitting a PR.
 
 ## Contributors
 
