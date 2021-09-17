@@ -20,7 +20,7 @@ router
 router
   .route('/')
   .get((req, res, next) => {
-    if (req.user) res.json(req.user);
+    if (req.user) return res.json(req.user);
     const err = { statusCode: 403, message: 'you are not logged in' };
     next(err);
   });

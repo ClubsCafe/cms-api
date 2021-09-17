@@ -32,7 +32,7 @@ module.exports.createUser = async (req, res) => {
       // eslint-disable-next-line no-undef
       if (err) return next(err);
       // so that we won't redirect to previous page :O when acc has been created.
-      res.send(user);
+      res.send('success');
       delete req.session.returnTo;
     });
   } catch (e) {
