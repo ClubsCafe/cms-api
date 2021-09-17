@@ -16,7 +16,7 @@ module.exports.index = async (req, res) => {
     users,
   });
 };
-module.exports.createUser = async (req, res) => {
+module.exports.createUser = async (req, res, next) => {
   try {
     const {
       email, name, username, password,
@@ -38,11 +38,8 @@ module.exports.createUser = async (req, res) => {
       });
       delete req.session.returnTo;
     });
-  } catch (e) {
-    res.status(500).json({
-      success: false,
-      message: e.message,
-    });
+  } catch (err) {
+    next(err);
   }
 };
 
@@ -98,7 +95,7 @@ module.exports.updateProfile = async (req, res) => {
   await user.save();
   res.status(201).json({
     success: true,
-    user
+    user,
   });
 };
 

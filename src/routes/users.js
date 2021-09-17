@@ -19,6 +19,7 @@ router
 
 router
   .route('/')
+  // eslint-disable-next-line consistent-return
   .get((req, res, next) => {
     if (req.user) return res.json(req.user);
     const err = { statusCode: 403, message: 'you are not logged in' };
