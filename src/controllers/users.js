@@ -2,7 +2,7 @@
 const passport = require('passport');
 const User = require('../models/user');
 
-const { cloudinary } = require('../cloudinary');
+const { cloudinary } = require('../services/cloudinary');
 // for managing images
 module.exports.index = async (req, res) => {
   const admins = await User.find({ userType: 'admin' });
@@ -32,7 +32,7 @@ module.exports.createUser = async (req, res) => {
       // eslint-disable-next-line no-undef
       if (err) return next(err);
       // so that we won't redirect to previous page :O when acc has been created.
-      res.send('success');
+      res.send(user);
       delete req.session.returnTo;
     });
   } catch (e) {

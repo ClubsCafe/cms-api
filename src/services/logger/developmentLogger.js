@@ -5,7 +5,8 @@ const {
 } = format;
 
 const developmentLogger = () => {
-  const myFormat = printf(({ level, message, ts }) => `${ts} ${level}: ${message}`);
+  // eslint-disable-next-line no-shadow
+  const myFormat = printf(({ level, message, timestamp }) => `${timestamp} ${level}: ${message}`);
 
   return createLogger({
     level: 'debug',

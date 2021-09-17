@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-const { cloudinary } = require('../cloudinary');
+const { cloudinary } = require('../services/cloudinary');
 
 const Institute = require('../models/institute');
 const Event = require('../models/event');

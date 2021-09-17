@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-const { cloudinary } = require('../cloudinary');
+const { cloudinary } = require('../services/cloudinary');
 
 const Event = require('../models/event');
 const Organization = require('../models/organization');
@@ -11,6 +11,7 @@ module.exports.index = async (req, res) => {
   const organizations = await Organization.find({});
   res.json(organizations);
 };
+
 module.exports.createOrganization = async (req, res) => {
   const {
     name, organizationId, externalUrl, about, bio,

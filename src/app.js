@@ -9,6 +9,7 @@ const app = express();
 
 // for passing body requests
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 // for mongodb, passport(authentication) and sessions
 const mongoose = require('mongoose');
@@ -16,10 +17,13 @@ const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const { mongooseConfig, sessionConfig } = require('./services/db');
+const logger = require('./services/logger');
 // for using sessions within mongo and not locally in browser
 
 // connection to mongoose database
-mongoose.connect(dbURL, mongooseConfig);
+mongoose.connect(dbURL, mongooseConfig).then(() => {
+  logger.info('Connected to mongoDB');
+});
 
 app.use(session(sessionConfig));
 
@@ -62,4 +66,6 @@ app.use((err, req, res, next) => {
   res.status(statusCode).json({ success: false, message });/* .send(statusCode, {err}) */
 });
 // starting express api server
-app.listen(port);
+app.listen(port, () => {
+  logger.info(`Server started on port ${port}`);
+});

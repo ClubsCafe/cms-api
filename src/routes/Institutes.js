@@ -11,7 +11,7 @@ const OrganizationRoutes = require('./organizations');
 const { isLoggedIn } = require('../middlewares/authentication');
 const { isMod, isAdmin } = require('../middlewares/authorization');
 
-const { storage } = require('../cloudinary');
+const { storage } = require('../services/cloudinary');
 
 const upload = multer({ storage });
 
