@@ -7,7 +7,7 @@ const catchAsync = require('../utilities/catchasync');
 
 const users = require('../controllers/users');
 
-const { storage } = require('../cloudinary');
+const { storage } = require('../services/cloudinary');
 const { isLoggedIn } = require('../middlewares/authentication');
 
 const upload = multer({ storage });
@@ -19,8 +19,9 @@ router
 
 router
   .route('/')
+  // eslint-disable-next-line consistent-return
   .get((req, res, next) => {
-    if (req.user) res.json(req.user);
+    if (req.user) return res.json(req.user);
     const err = { statusCode: 403, message: 'you are not logged in' };
     next(err);
   });
@@ -29,7 +30,7 @@ router
 router
   .route('/users')
   .get(catchAsync(users.index))
-/* updating profile section. */
+  /* updating profile section. */
   .put(isLoggedIn,
     upload.single('avatar'),
     catchAsync(users.updateProfile));
@@ -41,7 +42,7 @@ router
 
 router
   .route('/login')
-/* post request for logging in  */
+  /* post request for logging in  */
   .post(users.loginUser);
 /* get requesst to logout */
 router

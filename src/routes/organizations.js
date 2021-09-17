@@ -12,7 +12,7 @@ const organizations = require('../controllers/organizations');
 const { isLoggedIn } = require('../middlewares/authentication');
 const { isEventManager, isMod } = require('../middlewares/authorization');
 
-const { storage } = require('../cloudinary');
+const { storage } = require('../services/cloudinary');
 
 const upload = multer({ storage });
 

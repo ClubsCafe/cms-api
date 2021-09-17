@@ -2,7 +2,7 @@
 const passport = require('passport');
 const User = require('../models/user');
 
-const { cloudinary } = require('../cloudinary');
+const { cloudinary } = require('../services/cloudinary');
 // for managing images
 module.exports.index = async (req, res) => {
   const admins = await User.find({ userType: 'admin' });
@@ -16,7 +16,7 @@ module.exports.index = async (req, res) => {
     users,
   });
 };
-module.exports.createUser = async (req, res) => {
+module.exports.createUser = async (req, res, next) => {
   try {
     const {
       email, name, username, password,
@@ -32,11 +32,14 @@ module.exports.createUser = async (req, res) => {
       // eslint-disable-next-line no-undef
       if (err) return next(err);
       // so that we won't redirect to previous page :O when acc has been created.
-      res.send('success');
+      res.json(201).json({
+        success: true,
+        user: registeredUser,
+      });
       delete req.session.returnTo;
     });
-  } catch (e) {
-    res.send(e.message);
+  } catch (err) {
+    next(err);
   }
 };
 
@@ -44,7 +47,6 @@ module.exports.loginUser = (req, res, next) => {
   // eslint-disable-next-line consistent-return
   passport.authenticate('local', (err, user, info) => {
     if (err) { return next(err); }
-    res.json(info);
     if (!user) {
       return res.status(400).json({
         success: false,
@@ -54,14 +56,17 @@ module.exports.loginUser = (req, res, next) => {
     // eslint-disable-next-line consistent-return
     req.logIn(user, (error) => {
       if (error) { return next(error); }
-      res.json({ success: true, user: req.user });
+      res.statsu(200).json({ success: true, user: req.user });
     });
   })(req, res, next);
 };
 
 module.exports.logoutUser = (req, res) => {
   req.logout();
-  res.send('logout successfull');
+  res.status(200).json({
+    success: true,
+    message: 'Logged out successfully',
+  });
 };
 
 module.exports.updateProfile = async (req, res) => {
@@ -88,7 +93,10 @@ module.exports.updateProfile = async (req, res) => {
     user.avatar = { url: req.file.path, filename: req.file.filename };
   }
   await user.save();
-  res.send(user);
+  res.status(201).json({
+    success: true,
+    user,
+  });
 };
 
 module.exports.showProfile = async (req, res) => {
@@ -97,7 +105,13 @@ module.exports.showProfile = async (req, res) => {
     .populate('Organizations')
     .populate('events');
   if (!user) {
-    res.redirect('/users/');
+    res.status(404).json({
+      success: false,
+      message: 'User not found',
+    });
   }
-  res.json(user);
+  res.status(200).json({
+    success: true,
+    user,
+  });
 };

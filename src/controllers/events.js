@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-const { cloudinary } = require('../cloudinary');
+const { cloudinary } = require('../services/cloudinary');
 
 const Event = require('../models/event');
 const Organization = require('../models/organization');
@@ -27,7 +27,7 @@ module.exports.organizationIndex = async (req, res) => {
   });
 };
 
-module.exports.Index = async (req, res) => {
+module.exports.index = async (req, res) => {
   const activeEvents = await Event.find({
     active: true,
   });
@@ -127,7 +127,7 @@ module.exports.deleteEvent = async (req, res) => {
     $pull: { events: event._id },
   });
   /* Award deletion commands here */
-  await User.updateMany({ }, { $pull: { awards: event.awards } });
+  await User.updateMany({}, { $pull: { awards: event.awards } });
   await Award.deleteMany({ $in: { _id: event.awards } });
   await cloudinary.uploader.destroy(event.bannerImage.filename);
   await cloudinary.uploader.destroy(event.logo.filename);

@@ -7,7 +7,7 @@ const catchAsync = require('../utilities/catchasync');
 const { isLoggedIn } = require('../middlewares/authentication');
 const { isEventManager } = require('../middlewares/authorization');
 
-const { storage } = require('../cloudinary');
+const { storage } = require('../services/cloudinary');
 
 const upload = multer({ storage });
 
