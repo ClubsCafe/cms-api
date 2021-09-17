@@ -3,12 +3,14 @@ const express = require('express');
 const router = express.Router({ mergeParams: true });
 
 const multer = require('multer');
+const eventRoutes = require('./events');
+
 const catchAsync = require('../utilities/catchasync');
 
 const organizations = require('../controllers/organizations');
 
 const { isLoggedIn } = require('../middlewares/authentication');
-const { isEventManager, isMod, isAdmin } = require('../middlewares/authorization');
+const { isEventManager, isMod } = require('../middlewares/authorization');
 
 const { storage } = require('../cloudinary');
 
@@ -20,11 +22,15 @@ const fileUploads = upload.fields([
 ]);
 
 router
+  .use('/events',
+    eventRoutes);
+
+router
   .route('/')
   .get(catchAsync(organizations.index))
   .post(
     isLoggedIn,
-    catchAsync(isAdmin),
+    isMod,
     fileUploads,
     catchAsync(organizations.createOrganization),
   );
@@ -34,12 +40,12 @@ router
   .put(
     isLoggedIn,
     catchAsync(isEventManager),
-    upload.array('image'),
+    fileUploads,
     catchAsync(organizations.editOrganization),
   )
   .delete(
     isLoggedIn,
-    catchAsync(isAdmin),
+    isMod,
     catchAsync(organizations.deleteOrganization),
   );
 router

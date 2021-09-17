@@ -6,8 +6,7 @@
 module.exports.isLoggedIn = function (req, res, next) {
   req.session.returnTo = req.originalUrl;
   if (!req.isAuthenticated()) {
-    req.flash('error', 'you must be signed in');
-    return res.redirect('/login');
+    res.status(403).json({ success: false, message: 'You are not logged in' });
   }
   next();
 };

@@ -1,7 +1,7 @@
 {
   "name": "cms-api",
   "version": "1.0.0",
-  "description": "A website for creating and managing events held by clubs or organizations in colleges",
+  "description": "A website for creating and managing events held by clubs or organizations across the Institutes",
   "main": "index.js",
   "scripts": {
     "start": "node src/app.js",
@@ -16,7 +16,6 @@
   "keywords": [],
   "dependencies": {
     "cloudinary": "^1.27.0",
-    "connect-flash": "^0.1.1",
     "connect-mongo": "^4.5.0",
     "express": "^4.17.1",
     "express-session": "^1.17.2",

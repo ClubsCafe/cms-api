@@ -13,37 +13,49 @@ module.exports.isAdmin = function (req, res, next) {
   const { userType } = req.user;
   if (userType === 'admin') {
     next();
-  } else {
-    return res.send('you do no have permission to do that!');
   }
+  res
+    .status(403)
+    .json({ success: false, message: 'you do no have permission to do that!' });
 };
 
 // middleware checks if the loggen-in-user is admin or mod
 module.exports.isMod = function (req, res, next) {
   const { userType } = req.user;
-  if (userType === 'admin' || userType === 'mod') {
+  if (userType === 'admin') {
     next();
-  } else {
-    return res.send('you do no have permission to do that!');
   }
+  if (userType === 'mod') {
+    if (req.user.institute === req.params.instituteId) {
+      next();
+    }
+  }
+  res
+    .status(403)
+    .json({ success: false, message: 'you do no have permission to do that!' });
 };
 
 // this middleware checks if the loggen-in-user is admin or mod or EventManager
 // this middleware is an async function so its recommended to use it inside catchasync function.
 module.exports.isEventManager = async function (req, res, next) {
   const { userType } = req.user;
-  const organizationCount = await Organization.find({
-    organizationId: req.params.organizationId,
-    eventmanagers: { $in: [req.user._id] },
-  }).count();
-  // checks if useraccount is greater than 0 or the id is same as loggeninId
-  if (
-    userType === 'admin'
-    || userType === 'mod'
-    || (userType === 'eventmanager' && organizationCount)
-  ) {
+  if (userType === 'admin') {
     next();
-  } else {
-    return res.send('you do no have permission to do that!');
   }
+  if (userType === 'mod') {
+    if (req.user.institute === req.params.instituteId) {
+      next();
+    }
+  }
+  if (userType === 'eventmanager') {
+    const { organizationId } = req.params;
+    const organizationCount = await Organization.count({
+      organizationId,
+      eventmanagers: { $in: [req.user._id] },
+    });
+    if (organizationCount) next();
+  }
+  res
+    .status(403)
+    .json({ success: false, message: 'you do no have permission to do that!' });
 };

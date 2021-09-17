@@ -1,8 +1,9 @@
 /* eslint-disable no-underscore-dangle */
+const passport = require('passport');
 const User = require('../models/user');
 
-const { cloudinary } = require('../cloudinary'); // for managing images
-
+const { cloudinary } = require('../cloudinary');
+// for managing images
 module.exports.index = async (req, res) => {
   const admins = await User.find({ userType: 'admin' });
   const mods = await User.find({ userType: 'mod' });
@@ -18,12 +19,11 @@ module.exports.index = async (req, res) => {
 module.exports.createUser = async (req, res) => {
   try {
     const {
-      email, name, dob, username, password,
+      email, name, username, password,
     } = req.body;
     const user = new User({
       email,
       name,
-      dob,
       username,
     });
     const registeredUser = await User.register(user, password);
@@ -40,12 +40,23 @@ module.exports.createUser = async (req, res) => {
   }
 };
 
-module.exports.loginUser = (req, res) => {
-  /*  after successfull login */
-  /* const redirectUrl = req.session.returnTo || '/'; */
-  /* session stores the previous page we tried
-   to access so using returnTo will redirect us to that page */
-  res.send(req.user);
+module.exports.loginUser = (req, res, next) => {
+  // eslint-disable-next-line consistent-return
+  passport.authenticate('local', (err, user, info) => {
+    if (err) { return next(err); }
+    res.json(info);
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: info,
+      });
+    }
+    // eslint-disable-next-line consistent-return
+    req.logIn(user, (error) => {
+      if (error) { return next(error); }
+      res.json({ success: true, user: req.user });
+    });
+  })(req, res, next);
 };
 
 module.exports.logoutUser = (req, res) => {

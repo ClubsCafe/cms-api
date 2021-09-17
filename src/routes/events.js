@@ -1,8 +1,8 @@
 const express = require('express');
 
 const router = express.Router({ mergeParams: true });
-
 const multer = require('multer');
+const awardRoutes = require('./awards');
 const catchAsync = require('../utilities/catchasync');
 const { isLoggedIn } = require('../middlewares/authentication');
 const { isEventManager } = require('../middlewares/authorization');
@@ -18,15 +18,23 @@ const fileUploads = upload.fields([
 
 const events = require('../controllers/events');
 
+router.use(
+  '/awards',
+  awardRoutes,
+);
+
 router
   .route('/')
-  .get(catchAsync(events.index))
+  .get(
+    events.organizationIndex,
+  )
   .post(
     isLoggedIn,
     catchAsync(isEventManager),
     fileUploads,
     catchAsync(events.createEvent),
   );
+
 router
   .route('/register')
   .post(isLoggedIn,

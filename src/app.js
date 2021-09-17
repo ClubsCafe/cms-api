@@ -1,6 +1,6 @@
 // defining private urls and secret codes.
 const dbURL = process.env.DB_URL || 'mongodb://localhost:27017/cmsapi';
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 5000;
 
 // requiring dependencies
 const express = require('express');
@@ -15,7 +15,6 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
-const flash = require('connect-flash');
 const { mongooseConfig, sessionConfig } = require('./services/db');
 // for using sessions within mongo and not locally in browser
 
@@ -24,8 +23,6 @@ mongoose.connect(dbURL, mongooseConfig);
 
 app.use(session(sessionConfig));
 
-// for sending flash notices/warnings
-app.use(flash());
 // for Authentication via passport currently only for local strategy
 
 const User = require('./models/user');
@@ -47,9 +44,8 @@ app.use(async (req, res, next) => {
 /* requiring routes */
 // for normal(any) user Routes especially for logging in
 const userRoutes = require('./routes/users');
-const organizationRoutes = require('./routes/organizations');
-const eventRoutes = require('./routes/events');
-const awardRoutes = require('./routes/awards');
+const organizationRoutes = require('./routes/independent/organization');
+const eventRoutes = require('./routes/independent/events');
 const adminRoutes = require('./routes/admin');
 const modRoutes = require('./routes/mod');
 
@@ -58,13 +54,12 @@ app.use('/', userRoutes);
 app.use('/admin', adminRoutes);
 app.use('/mod', modRoutes);
 app.use('/organizations', organizationRoutes);
-app.use('/organizations/:organizationId/events', eventRoutes);
-app.use('/organizations/:organizationId/events/:eventId/awards', awardRoutes);
+app.use('/events', eventRoutes);
 
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   const { statusCode = 500, message = 'something went wrong' } = err;
-  res.status(statusCode).send(message);/* .send(statusCode, {err}) */
+  res.status(statusCode).json({ success: false, message });/* .send(statusCode, {err}) */
 });
 // starting express api server
 app.listen(port);

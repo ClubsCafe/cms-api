@@ -2,7 +2,6 @@ const express = require('express');
 
 const router = express.Router({ mergeParams: true });
 
-const passport = require('passport');
 const multer = require('multer');
 const catchAsync = require('../utilities/catchasync');
 
@@ -13,29 +12,39 @@ const { isLoggedIn } = require('../middlewares/authentication');
 
 const upload = multer({ storage });
 
-router.route('/register').post(catchAsync(users.createUser));
+/* post request to register */
+router
+  .route('/register')
+  .post(catchAsync(users.createUser));
+
+router
+  .route('/')
+  .get((req, res, next) => {
+    if (req.user) res.json(req.user);
+    const err = { statusCode: 403, message: 'you are not logged in' };
+    next(err);
+  });
 
 /* for getting all users list according to userType */
-router.route('/')
-  .get(isLoggedIn,
-    (req, res) => { res.send(req.user); });
-
-router.route('/users')
+router
+  .route('/users')
   .get(catchAsync(users.index))
-  .put(isLoggedIn, upload.single('avatar'), catchAsync(users.updateProfile));
+/* updating profile section. */
+  .put(isLoggedIn,
+    upload.single('avatar'),
+    catchAsync(users.updateProfile));
 
 /* Note: userId refers to the username and not the objectId */
-router.route('/users/:userId').get(catchAsync(users.showProfile));
+router
+  .route('/users/:userId')
+  .get(catchAsync(users.showProfile));
 
 router
   .route('/login')
-  .post(
-    passport.authenticate('local', {
-      failureFlash: true,
-      failureRedirect: '/login',
-    }),
-    users.loginUser,
-  );
-
-router.get('/logout', users.logoutUser);
+/* post request for logging in  */
+  .post(users.loginUser);
+/* get requesst to logout */
+router
+  .get('/logout',
+    users.logoutUser);
 module.exports = router;

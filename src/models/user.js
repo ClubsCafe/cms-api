@@ -8,7 +8,7 @@ const passportLocalMongoose = require('passport-local-mongoose');
 const Event = require('./event');
 const Award = require('./award');
 const Organization = require('./organization');
-
+const Institute = require('./institute');
 /* yet to be created */
 const ImageSchema = new Schema({
   url: String,
@@ -32,7 +32,6 @@ const UserSchema = new Schema(
     dob: {
       type: Date,
       default: Date.now,
-      required: [true, 'DOB cannot be Empty'],
     },
     name: {
       type: String,
@@ -62,7 +61,11 @@ const UserSchema = new Schema(
       type: Number,
       default: 0,
     },
-    // to specify which organizations one belongs to, could be multiple
+    // to specify which organizations one belongs to, could be multiple,
+    institute: {
+      type: Schema.Types.ObjectId,
+      ref: 'Institute',
+    },
     organizations: [
       {
         type: Schema.Types.ObjectId,
