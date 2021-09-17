@@ -56,7 +56,7 @@ const EventSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Organization',
   },
-  completed: {
+  active: {
     type: Boolean,
     default: false,
   },

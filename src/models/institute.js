@@ -5,47 +5,41 @@ const { Schema } = mongoose;
 
 const User = require('./user');
 const Event = require('./event');
-const Institute = require('./institute');
+const Organization = require('./organization');
+
 // for images aka- for cloudinary
 const ImageSchema = new Schema({
   url: String,
   filename: String,
 });
 
-const OrganizationSchema = new Schema({
+const InstituteSchema = new Schema({
   // name of the organizer
   name: {
     type: String,
   },
   // unique organizer id
-  organizationId: {
+  instituteId: {
     type: String,
     unique: true,
+    maxlength: 8,
     required: true,
-  },
-  bio: {
-    type: String,
   },
   about: {
     type: String,
   },
-  institute: {
-    type: Schema.Types.ObjectId,
-    ref: 'Institute',
-  },
   externalUrl: {
     type: String,
   },
-
   // events held by the organizations
-  events: [
+  organizations: [
     {
       type: Schema.Types.ObjectId,
-      ref: 'Event',
+      ref: 'Organization',
     },
   ],
   // members of the organization who will handle events.
-  eventmanagers: [
+  mods: [
     {
       type: Schema.Types.ObjectId,
       ref: 'User',
@@ -58,10 +52,10 @@ const OrganizationSchema = new Schema({
       ref: 'User',
     },
   ],
-  // banner image for the organization's profile
+  //  banner image for the organization's profile
   bannerImage: ImageSchema,
-  // logo of the organization
+  //  logo of the organization
   logo: ImageSchema,
 });
 
-module.exports = mongoose.model('Organization', OrganizationSchema);
+module.exports = mongoose.model('Institute', InstituteSchema);

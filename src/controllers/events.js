@@ -7,12 +7,38 @@ const Award = require('../models/award');
 const User = require('../models/user');
 /*  to get all the events of the organizations  a
  seperate get req will be made for all the events happening */
-module.exports.index = async (req, res) => {
+
+module.exports.organizationIndex = async (req, res) => {
   const currentOrganization = await Organization.findOne({
     organizationId: req.params.organizationId,
   });
-  const events = await Event.find({ organization: currentOrganization._id });
-  res.json(events);
+  const activeEvents = await Event.find({
+    organization: currentOrganization._id,
+    active: true,
+  });
+  const completedEvents = await Event.find({
+    organization: currentOrganization._id,
+    active: false,
+  });
+  res.json({
+    success: true,
+    activeEvents,
+    completedEvents,
+  });
+};
+
+module.exports.Index = async (req, res) => {
+  const activeEvents = await Event.find({
+    active: true,
+  });
+  const completedEvents = await Event.find({
+    active: false,
+  });
+  res.json({
+    success: true,
+    activeEvents,
+    completedEvents,
+  });
 };
 module.exports.createEvent = async (req, res) => {
   const organization = await Organization.findOne({
@@ -27,7 +53,7 @@ module.exports.createEvent = async (req, res) => {
     about,
     startDate,
     endDate,
-    Completed,
+    active,
   } = req.body.event;
   const event = new Event({
     name,
@@ -38,7 +64,7 @@ module.exports.createEvent = async (req, res) => {
     about,
     startDate,
     endDate,
-    Completed,
+    active,
   });
   if (req.files.logo[0]) {
     event.logo = {
@@ -56,7 +82,7 @@ module.exports.createEvent = async (req, res) => {
   await event.save();
   organization.events.push(event._id);
   await organization.save();
-  res.send(event);
+  res.json({ success: true, event });
   /* res.redirect(`/organizations/${req.params.organizationId}/events/${eventId}/`) */
 };
 module.exports.showEvent = async (req, res, next) => {
@@ -69,7 +95,7 @@ module.exports.showEvent = async (req, res, next) => {
     next(err);
     // res.redirect(`/organizations/${req.params.organizationId}/`)
   }
-  res.json(event);
+  res.json({ success: true, event });
 };
 
 module.exports.editEvent = async (req, res) => {
@@ -92,9 +118,7 @@ module.exports.editEvent = async (req, res) => {
     };
   }
   await event.save();
-  res.redirect(
-    `/organizations/${req.params.organizationId}/events/${req.params.eventId}/`,
-  );
+  res.json({ success: true, event });
 };
 
 module.exports.deleteEvent = async (req, res) => {
@@ -108,7 +132,7 @@ module.exports.deleteEvent = async (req, res) => {
   await cloudinary.uploader.destroy(event.bannerImage.filename);
   await cloudinary.uploader.destroy(event.logo.filename);
   await event.findByIdAndDelete(event._id);
-  res.redirect(`/organizations/${req.params.organizationId}`);
+  res.json({ success: true, message: 'Event Deleted Successfully' });
 };
 
 module.exports.register = async (req, res) => {
@@ -118,12 +142,12 @@ module.exports.register = async (req, res) => {
   const user = User.findById(req.user._id);
   user.events.push(event._id);
   await user.save();
-  res.send('registration Successfull');
+  res.json({ sucess: true, message: 'Registered for the event Successfully.' });
 };
 
 module.exports.deregister = async (req, res) => {
   const event = await Event.findOneAndUpdate({ eventId: req.params.eventId },
     { $pull: { user: req.user._id } });
   await User.findOneAndUpdate({ _id: req.user._id }, { $pull: { events: event._id } });
-  res.send('successfully deregistered. :(');
+  res.json({ sucess: true, message: 'Deregistered from the event successfully.' });
 };

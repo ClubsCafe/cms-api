@@ -9,7 +9,7 @@ const User = require('../models/user');
 module.exports.index = async (req, res) => {
   const currentEvent = Event.find({ eventId: req.params.eventId });
   const awards = await Award.find({ event: currentEvent._id });
-  res.json(awards);
+  res.json({ success: true, awards });
 };
 module.exports.createAward = async (req, res) => {
   const event = Event.find({ eventId: req.params.eventId });
@@ -25,62 +25,70 @@ module.exports.createAward = async (req, res) => {
   await award.save();
   event.awards.push(award._id);
   event.save();
-  res.redirect(
-    `/organizations/${req.params.organizationId}/events/${event.eventId}/`,
-  );
+  res.json({ success: true, award });
 };
 
-module.exports.showAward = async (req, res) => {
+module.exports.showAward = async (req, res, next) => {
   const award = await Award.findById(req.params.awardId)
     .populate('event')
     .populate('winners');
   if (!award) {
-    res.redirect(
-      `/organizations/${req.params.awardId}/events/${req.params.eventId}`,
-    );
+    const err = { statusCode: 404, message: 'Award not found' };
+    next(err);
   }
-  res.json(award);
+  res.json({ success: true, award });
 };
 
-module.exports.editAward = async (req, res) => {
+module.exports.editAward = async (req, res, next) => {
   const award = await Award.findByIdAndUpdate(req.params.awardId, {
     ...req.body.award,
   });
+  if (!award) {
+    const err = { statusCode: 404, message: 'Award not found' };
+    next(err);
+  }
   if (req.file) {
     await cloudinary.uploader.destroy(award.logo.filename);
     award.logo = { url: req.file.path, filename: req.file.filename };
   }
   await award.save();
-  res.redirect(
-    `/organizations/${req.params.organizationId}/events/${req.params.eventId}/`,
-  );
+  res.json({ success: true, award });
 };
 
-module.exports.deleteAward = async (req, res) => {
+module.exports.deleteAward = async (req, res, next) => {
   const award = await Award.findById(req.params.awardId);
+  if (!award) {
+    const err = { statusCode: 404, message: 'Award not found' };
+    next(err);
+  }
   await Event.findOneAndUpdate(
-    { eventId: req.params.eventId },
+    { eventId: award.event },
     { $pull: { awards: award._Id } },
   );
   await User.updateMany({ $in: { awards: award._id } },
-    { $pull: { awards: award._id }, $inc: { points: -award.points } });
+    {
+      $pull: { awards: award._id },
+      $inc: { points: -award.points },
+    });
   await cloudinary.uploader.destroy(award.bannerImage.filename);
   await cloudinary.uploader.destroy(award.logo.filename);
   await Award.findByIdAndDelete(award._id);
-  res.redirect(
-    `/organizations/${req.params.organizationId}/events/${req.params.eventId}/`,
-  );
+  res.json({ success: true, message: 'Award deleted Successfuly' });
 };
 
-module.exports.giveAward = async (req, res) => {
+module.exports.giveAward = async (req, res, next) => {
   const { winners } = req.body;
   const award = Award.findById(req.params.awardId);
+  if (!award) {
+    const err = { statusCode: 404, message: 'Award not found' };
+    next(err);
+  }
   await User.updateMany(
     { $in: { username: winners } },
-    { $push: { awards: req.params.awardId }, $inc: { points: award.points } },
+    {
+      $push: { awards: req.params.awardId },
+      $inc: { points: award.points },
+    },
   );
-  res.send('Success');
-  res.redirect(
-    `/organizations/${req.params.organizationId}/events/${req.params.eventId}/`,
-  );
+  res.json({ success: true, message: 'Award added Successfully' });
 };
