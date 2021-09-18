@@ -5,10 +5,50 @@ const User = require('../models/user');
 const { cloudinary } = require('../services/cloudinary');
 // for managing images
 module.exports.index = async (req, res) => {
-  const admins = await User.find({ userType: 'admin' });
-  const mods = await User.find({ userType: 'mod' });
-  const eventManagers = await User.find({ userType: 'eventmanager' });
-  const users = await User.find({ userType: 'user' });
+  const admins = await User.find(
+    { userType: 'admin' },
+    {
+      username: 1,
+      about: 1,
+      bio: 1,
+      points: 1,
+      avatar: 1,
+      createdAt: 1,
+    },
+  );
+  const mods = await User.find(
+    { userType: 'mod' },
+    {
+      username: 1,
+      about: 1,
+      bio: 1,
+      points: 1,
+      avatar: 1,
+      createdAt: 1,
+    },
+  );
+  const eventManagers = await User.find(
+    { userType: 'eventmanager' },
+    {
+      username: 1,
+      about: 1,
+      bio: 1,
+      points: 1,
+      avatar: 1,
+      createdAt: 1,
+    },
+  );
+  const users = await User.find(
+    { userType: 'user' },
+    {
+      username: 1,
+      about: 1,
+      bio: 1,
+      points: 1,
+      avatar: 1,
+      createdAt: 1,
+    },
+  );
   return res.json({
     success: true,
     admins,
@@ -101,16 +141,23 @@ module.exports.updateProfile = async (req, res, next) => {
 };
 
 module.exports.showProfile = async (req, res, next) => {
-  const user = await User.find({ username: req.params.userId })
+  const user = await User.findOne({ username: req.params.userId })
     .populate('awards')
-    .populate('Organizations')
+    .populate('organizations')
     .populate('events');
   if (!user) {
     const err = { statusCode: 404, message: 'User not found' };
     return next(err);
   }
+  const email = (req.user.institute === user.institute) ? user.email : '';
   return res.status(200).json({
     success: true,
-    user,
+    user: {
+      name: user.name,
+      username: user.username,
+      bio: user.bio,
+      about: user.about,
+      email,
+    },
   });
 };

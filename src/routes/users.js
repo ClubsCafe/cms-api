@@ -30,7 +30,8 @@ router
 router
   .route('/users')
   /* route to get all users details */
-  .get(catchAsync(users.index))
+  .get(isLoggedIn,
+    catchAsync(users.index))
   /* updating profile section. */
   .put(isLoggedIn,
     upload.single('avatar'),
@@ -40,7 +41,8 @@ router
 router
   .route('/users/:userId')
   /* GET request to get specific profile details */
-  .get(catchAsync(users.showProfile));
+  .get(isLoggedIn,
+    catchAsync(users.showProfile));
 
 router
   .route('/login')

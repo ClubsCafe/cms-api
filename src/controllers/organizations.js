@@ -11,7 +11,13 @@ module.exports.index = async (req, res) => {
   const organizations = await Organization.find({});
   return res.json({ success: true, organizations });
 };
-
+module.exports.instituteIndex = async (req, res) => {
+  const institute = await Institute.findOne({ instituteId: req.params.instituteId });
+  const organizations = await Organization.find({
+    institute: institute._id,
+  });
+  return res.json({ success: true, organizations });
+};
 module.exports.createOrganization = async (req, res, next) => {
   const {
     name, organizationId, externalUrl, about, bio,

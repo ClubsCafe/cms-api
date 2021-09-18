@@ -28,7 +28,7 @@ router
 router
   .route('/')
 /* GET request to get all the organizations of a institute */
-  .get(catchAsync(organizations.index))
+  .get(catchAsync(organizations.instituteIndex))
 /* POST request to create Organization of a institute */
   .post(
     isLoggedIn,
