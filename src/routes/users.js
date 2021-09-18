@@ -29,6 +29,7 @@ router
 /* for getting all users list according to userType */
 router
   .route('/users')
+  /* route to get all users details */
   .get(catchAsync(users.index))
   /* updating profile section. */
   .put(isLoggedIn,
@@ -38,6 +39,7 @@ router
 /* Note: userId refers to the username and not the objectId */
 router
   .route('/users/:userId')
+  /* GET request to get specific profile details */
   .get(catchAsync(users.showProfile));
 
 router

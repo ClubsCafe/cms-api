@@ -15,7 +15,9 @@ const awards = require('../controllers/awards');
 
 router
   .route('/')
+  /* GET request for getting all awards of a specific event  */
   .get(catchAsync(awards.index))
+  /* post request for creating an award for a specifc event */
   .post(
     isLoggedIn,
     catchAsync(isEventManager),
@@ -25,6 +27,7 @@ router
 
 router
   .route('/:awardId')
+  /* GET request for getting specific award details */
   .get(catchAsync(awards.showAward))
   .put(
     isLoggedIn,
@@ -32,6 +35,7 @@ router
     upload.single('logo'),
     catchAsync(awards.editAward),
   )
+  /* DELETE request for deleting specifc award, removes users from award and award from user */
   .delete(
     isLoggedIn,
     catchAsync(isEventManager),
@@ -40,5 +44,6 @@ router
 
 router
   .route('/:awardId/giveAward')
+  /* PUT request to give award to a user */
   .put(isLoggedIn, catchAsync(isEventManager), catchAsync(awards.giveAward));
 module.exports = router;

@@ -9,13 +9,15 @@ module.exports.index = async (req, res) => {
   const mods = await User.find({ userType: 'mod' });
   const eventManagers = await User.find({ userType: 'eventmanager' });
   const users = await User.find({ userType: 'user' });
-  res.json({
+  return res.json({
+    success: true,
     admins,
     mods,
     eventManagers,
     users,
   });
 };
+// eslint-disable-next-line consistent-return
 module.exports.createUser = async (req, res, next) => {
   try {
     const {
@@ -27,24 +29,21 @@ module.exports.createUser = async (req, res, next) => {
       username,
     });
     const registeredUser = await User.register(user, password);
-    // eslint-disable-next-line consistent-return
     req.login(registeredUser, (err) => {
       // eslint-disable-next-line no-undef
       if (err) return next(err);
       // so that we won't redirect to previous page :O when acc has been created.
-      res.json(201).json({
+      return res.json(201).json({
         success: true,
         user: registeredUser,
       });
-      delete req.session.returnTo;
     });
   } catch (err) {
-    next(err);
+    return next(err);
   }
 };
 
 module.exports.loginUser = (req, res, next) => {
-  // eslint-disable-next-line consistent-return
   passport.authenticate('local', (err, user, info) => {
     if (err) { return next(err); }
     if (!user) {
@@ -54,28 +53,27 @@ module.exports.loginUser = (req, res, next) => {
       });
     }
     // eslint-disable-next-line consistent-return
-    req.logIn(user, (error) => {
+    return req.logIn(user, (error) => {
       if (error) { return next(error); }
-      res.statsu(200).json({ success: true, user: req.user });
+      return res.status(200).json({ success: true, user: req.user });
     });
   })(req, res, next);
 };
 
 module.exports.logoutUser = (req, res) => {
   req.logout();
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
     message: 'Logged out successfully',
   });
 };
 
-module.exports.updateProfile = async (req, res) => {
+module.exports.updateProfile = async (req, res, next) => {
   /* for updating profiles including avatar here. */
   const id = req.user._id;
   const {
     name, dob, bio, about,
   } = req.body;
-  // gotta change it to username as profile will be given id will be kept hidden as possible
   const user = await User.findByIdAndUpdate(
     id,
     {
@@ -85,7 +83,10 @@ module.exports.updateProfile = async (req, res) => {
     },
     { new: true },
   );
-  /* await User.findById(id) */
+  if (!user) {
+    const err = { statusCode: 404, message: 'User not found' };
+    return next(err);
+  }
   if (req.file) {
     if (user.avatar) {
       await cloudinary.uploader.destroy(user.avatar.filename);
@@ -93,24 +94,22 @@ module.exports.updateProfile = async (req, res) => {
     user.avatar = { url: req.file.path, filename: req.file.filename };
   }
   await user.save();
-  res.status(201).json({
+  return res.status(201).json({
     success: true,
     user,
   });
 };
 
-module.exports.showProfile = async (req, res) => {
+module.exports.showProfile = async (req, res, next) => {
   const user = await User.find({ username: req.params.userId })
     .populate('awards')
     .populate('Organizations')
     .populate('events');
   if (!user) {
-    res.status(404).json({
-      success: false,
-      message: 'User not found',
-    });
+    const err = { statusCode: 404, message: 'User not found' };
+    return next(err);
   }
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
     user,
   });

@@ -9,11 +9,14 @@ const User = require('../models/user');
 seperate get req will be made for all the events happening */
 module.exports.index = async (req, res) => {
   const institutes = await Institute.find({});
-  res.json({ success: true, institutes });
+  return res.json({ success: true, institutes });
 };
 module.exports.createInstitute = async (req, res) => {
   const {
-    name, instituteId, about, externalUrl,
+    name,
+    instituteId,
+    about,
+    externalUrl,
   } = req.body.institute;
   const institute = new Institute({
     name,
@@ -34,7 +37,7 @@ module.exports.createInstitute = async (req, res) => {
     };
   }
   await institute.save();
-  res.json({ success: true, institute });
+  return res.json({ success: true, institute });
 };
 
 module.exports.showInstitute = async (req, res, next) => {
@@ -45,8 +48,8 @@ module.exports.showInstitute = async (req, res, next) => {
     .populate('mods')
     .populate('organizations');
   if (!institute) {
-    const err = { statusCode: 404, message: 'InstituteNotFound' };
-    next(err);
+    const err = { statusCode: 404, message: 'Institute Not Found' };
+    return next(err);
   }
   const activeEvents = await Event.find({
     institute: institute._id,
@@ -56,16 +59,48 @@ module.exports.showInstitute = async (req, res, next) => {
     institute: institute._id,
     completed: true,
   });
-  res.json({
+  return res.json({
     success: true, institute, activeEvents, completedEvents,
   });
 };
 
-module.exports.editInstitute = async (req, res) => {
+module.exports.editInstitute = async (req, res, next) => {
+  const {
+    name,
+    instituteId,
+    about,
+    externalUrl,
+  } = req.body.institute;
+  if (req.user.userType === 'mod') {
+    const instituteCount = await Institute.count(
+      {
+        instituteId: req.params.instituteId,
+        $in: { mods: req.user._id },
+      },
+    );
+    if (!instituteCount) {
+      const err = {
+        statusCode: 404,
+        message: 'Institute Not Found or the current user is not a mod of the institute',
+      };
+      return next(err);
+    }
+  }
   const institute = await Institute.findOneAndUpdate(
-    { instituteId: req.params.instituteId },
-    { ...req.body.institute },
+    {
+      instituteId: req.params.instituteId,
+    },
+    {
+      name,
+      instituteId,
+      about,
+      externalUrl,
+    },
   );
+  if (!institute) {
+    const err = { statusCode: 404, message: 'Institute not found' };
+    return next(err);
+  }
   if (req.files.logo[0]) {
     await cloudinary.uploader.destroy(institute.logo.filename);
     institute.logo = {
@@ -81,7 +116,7 @@ module.exports.editInstitute = async (req, res) => {
     };
   }
   await institute.save();
-  res.redirect({
+  return res.json({
     success: true,
     message: 'Institute details Updated Successfully',
     institute,
@@ -93,7 +128,15 @@ module.exports.addMod = async (req, res, next) => {
   const institute = await Institute.findOne({
     instituteId: req.params.instituteId,
   });
+  if (!institute) {
+    const err = { statusCode: 404, message: 'Institute not found' };
+    return next(err);
+  }
   const user = await User.findOne({ username: req.body.username });
+  if (!user) {
+    const err = { statusCode: 404, message: 'User not found' };
+    return next(err);
+  }
   const { userType } = user;
   if (
     userType === 'admin'
@@ -104,40 +147,66 @@ module.exports.addMod = async (req, res, next) => {
       success: true,
       institute,
     });
-  } else {
-    const err = {
-      statusCode: 400,
-      message: 'The User doesn\'t have minimum previleges to become a mod',
-    };
-    next(err);
   }
+  const err = {
+    statusCode: 400,
+    message: 'The User doesn\'t have minimum previleges to become a mod',
+  };
+  return next(err);
 };
 
-module.exports.addMember = async (req, res) => {
+module.exports.addMember = async (req, res, next) => {
+  if (req.user.userType === 'mod') {
+    const instituteCount = await Institute.count(
+      {
+        instituteId: req.params.instituteId,
+        $in: { mods: req.user._id },
+      },
+    );
+    if (!instituteCount) {
+      const err = {
+        statusCode: 404,
+        message: 'Institute Not Found or the current user is not a mod of the institute',
+      };
+      return next(err);
+    }
+  }
   const institute = await Institute.findOne({
     instituteId: req.params.instituteId,
   });
+  if (!institute) {
+    const err = { statusCode: 404, message: 'Institute not found' };
+    return next(err);
+  }
   const user = await User.findOne({ username: req.body.username });
+  if (!user) {
+    const err = { statusCode: 404, message: 'User not found' };
+    return next(err);
+  }
   user.institute = institute._id;
   institute.members.push(user._id);
   await user.save();
   await institute.save();
-  res.json({
+  return res.json({
     success: true,
     message: 'member added successfully to the institute',
   });
 };
 
-module.exports.deleteInstitute = async (req, res) => {
+module.exports.deleteInstitute = async (req, res, next) => {
   const institute = await Institute.find({
     eventId: req.params.instituteId,
   });
+  if (!institute) {
+    const err = { statusCode: 404, message: 'Institute not found' };
+    return next(err);
+  }
   /* Will not be deleting events so that events occured or awards
    given stay. */
   await cloudinary.uploader.destroy(institute.bannerImage.filename);
   await cloudinary.uploader.destroy(institute.logo.filename);
   await Institute.findByIdAndDelete(institute._id);
-  res.json({
+  return res.json({
     success: true,
     message: 'Institute has successfully be deleted',
   });
