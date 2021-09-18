@@ -63,7 +63,7 @@ app.use('/events', eventRoutes);
 app.use((err, req, res, next) => {
   /* setting up error message to be decalred if something throws an error */
   const { statusCode = 500, message = 'something went wrong' } = err;
-  res.status(statusCode).json({ success: false, message });/* .send(statusCode, {err}) */
+  return res.status(statusCode).json({ success: false, message });
 });
 // starting express api server
 app.listen(port, () => {

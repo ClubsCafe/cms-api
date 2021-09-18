@@ -1,7 +1,7 @@
 /* eslint-disable no-underscore-dangle */
 const passport = require('passport');
 const User = require('../models/user');
-
+/* const logger = require('../services/logger'); */
 const { cloudinary } = require('../services/cloudinary');
 // for managing images
 module.exports.index = async (req, res) => {
@@ -61,6 +61,31 @@ module.exports.index = async (req, res) => {
 module.exports.createUser = async (req, res, next) => {
   try {
     const {
+      email, username, password, name,
+    } = req.body;
+    const user = new User({ email, username, name });
+    const registeredUser = await User.register(user, password);
+    req.login(registeredUser, (err) => {
+      if (err) return next(err);
+      delete req.session.returnTo;
+      return res.status(201).json({
+        success: true,
+        user: {
+          name: registeredUser.name,
+          username: registeredUser.username,
+          email: registeredUser.email,
+        },
+      });
+    });
+  } catch (e) {
+    res.status(400).json({
+      success: false,
+      message: e.message,
+    });
+  }
+};/* async (req, res, next) => {
+  try {
+    const {
       email, name, username, password,
     } = req.body;
     const user = new User({
@@ -71,17 +96,21 @@ module.exports.createUser = async (req, res, next) => {
     const registeredUser = await User.register(user, password);
     req.login(registeredUser, (err) => {
       // eslint-disable-next-line no-undef
-      if (err) return next(err);
-      // so that we won't redirect to previous page :O when acc has been created.
-      return res.json(201).json({
+      if (err) {
+        logger.info(err);
+        return next(err);
+      }
+      logger.info('upto res.json');
+      res.json(201).json({
         success: true,
         user: registeredUser,
       });
     });
   } catch (err) {
+    logger.info('error sent');
     return next(err);
   }
-};
+}; */
 
 module.exports.loginUser = (req, res, next) => {
   passport.authenticate('local', (err, user, info) => {
