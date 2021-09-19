@@ -12,11 +12,6 @@ const { isLoggedIn } = require('../middlewares/authentication');
 
 const upload = multer({ storage });
 
-/* post request to register */
-router
-  .route('/register')
-  .post(catchAsync(users.createUser));
-
 router
   .route('/')
   // eslint-disable-next-line consistent-return
@@ -48,8 +43,5 @@ router
   .route('/login')
   /* post request for logging in  */
   .post(users.loginUser);
-/* get requesst to logout */
-router
-  .get('/logout',
-    users.logoutUser);
+
 module.exports = router;
