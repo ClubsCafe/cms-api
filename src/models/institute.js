@@ -4,9 +4,7 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const User = require('./user');
-const Event = require('./event');
 const Organization = require('./organization');
-
 // for images aka- for cloudinary
 const ImageSchema = new Schema({
   url: String,
@@ -31,18 +29,17 @@ const InstituteSchema = new Schema({
   externalUrl: {
     type: String,
   },
-  // events held by the organizations
-  organizations: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'Organization',
-    },
-  ],
   // members of the organization who will handle events.
   mods: [
     {
       type: Schema.Types.ObjectId,
       ref: 'User',
+    },
+  ],
+  organizations: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Organization',
     },
   ],
   // members of the organizers.

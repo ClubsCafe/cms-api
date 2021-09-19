@@ -20,14 +20,16 @@ const fileUploads = upload.fields([
   { name: 'logo', maxCount: 1 },
   { name: 'bannerImage', maxCount: 1 },
 ]);
-
+/* requiring dependent route */
 router
   .use('/events',
     eventRoutes);
 
 router
   .route('/')
-  .get(catchAsync(organizations.index))
+/* GET request to get all the organizations of a institute */
+  .get(catchAsync(organizations.instituteIndex))
+/* POST request to create Organization of a institute */
   .post(
     isLoggedIn,
     isMod,
@@ -36,13 +38,16 @@ router
   );
 router
   .route('/:organizationId/')
+/* GET request to get specific organization detail */
   .get(catchAsync(organizations.showOrganization))
+/* PUT request to edit specific organization detail */
   .put(
     isLoggedIn,
     catchAsync(isEventManager),
     fileUploads,
     catchAsync(organizations.editOrganization),
   )
+/* DELETE request to delete specific Organization */
   .delete(
     isLoggedIn,
     isMod,
@@ -50,11 +55,13 @@ router
   );
 router
   .route('/:organizationId/eventmanagers')
+  /* POST request for adding eventmanagers into the organization */
   .post(isLoggedIn,
     isMod,
     catchAsync(organizations.addEventManager));
 router
   .route('/:organizationId/members')
+  /* POST request for adding members into the organization */
   .post(isLoggedIn,
     catchAsync(isEventManager),
     catchAsync(organizations.addMember));

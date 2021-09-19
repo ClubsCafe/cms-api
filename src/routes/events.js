@@ -18,6 +18,7 @@ const fileUploads = upload.fields([
 
 const events = require('../controllers/events');
 
+/* calling another dependent route */
 router.use(
   '/awards',
   awardRoutes,
@@ -25,9 +26,11 @@ router.use(
 
 router
   .route('/')
+  /* GET request forgetting all events of a specific organization */
   .get(
     events.organizationIndex,
   )
+  /* POST request for creating events for an organization */
   .post(
     isLoggedIn,
     catchAsync(isEventManager),
@@ -37,23 +40,28 @@ router
 
 router
   .route('/register')
+  /* POST request for registring for an event */
   .post(isLoggedIn,
     catchAsync(events.register));
 
 router
   .route('/register')
+  /* POST request for deregistring from the event */
   .post(isLoggedIn,
     catchAsync(events.deregister));
 
 router
   .route('/:eventId')
+  /* GET request for getting specific event details */
   .get(catchAsync(events.showEvent))
+  /* PUT request for editing specific event details */
   .put(
     isLoggedIn,
     catchAsync(isEventManager),
     fileUploads,
     catchAsync(events.editEvent),
   )
+  /* DELETE request for deleting specific event */
   .delete(
     isLoggedIn,
     catchAsync(isEventManager),

@@ -29,21 +29,13 @@ const OrganizationSchema = new Schema({
   about: {
     type: String,
   },
+  externalUrl: {
+    type: String,
+  },
   institute: {
     type: Schema.Types.ObjectId,
     ref: 'Institute',
   },
-  externalUrl: {
-    type: String,
-  },
-
-  // events held by the organizations
-  events: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'Event',
-    },
-  ],
   // members of the organization who will handle events.
   eventmanagers: [
     {

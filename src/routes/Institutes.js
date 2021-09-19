@@ -20,10 +20,16 @@ const fileUploads = upload.fields([
   { name: 'bannerImage', maxCount: 1 },
 ]);
 
-router.use('/organizations', OrganizationRoutes);
+/* using organization route(dependent routes) */
+router
+  .use('/organizations',
+    OrganizationRoutes);
+
 router
   .route('/')
+  /* GET REQUEST for getting all the institutes details */
   .get(catchAsync(institutes.index))
+  /* POST request for creating institutes */
   .post(
     isLoggedIn,
     isAdmin,
@@ -32,13 +38,19 @@ router
   );
 router
   .route('/:instituteId/')
+  /* GET request for getting specific institute details */
   .get(catchAsync(institutes.showInstitute))
+  /* PUT request for editing specific institute details */
   .put(
     isLoggedIn,
     isMod,
     upload.array('image'),
     catchAsync(institutes.editInstitute),
   )
+  /* DELETE request for deleting specific institute,
+  Note that it doesn't delete sub organization.
+  or it will be made to not do it but change it to a dummy
+  insitute. */
   .delete(
     isLoggedIn,
     isAdmin,
@@ -46,11 +58,13 @@ router
   );
 router
   .route('/:instituteId/mods')
+  /* POST Request to assign mods for a institute */
   .post(isLoggedIn,
     isAdmin,
     catchAsync(institutes.addMod));
 router
   .route('/:instituteId/members')
+  /* POST request to add members into a institute */
   .post(isLoggedIn,
     isMod,
     catchAsync(institutes.addMember));

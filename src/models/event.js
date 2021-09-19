@@ -6,6 +6,7 @@ const { Schema } = mongoose;
 const Award = require('./award');
 const Organization = require('./organization');
 const User = require('./user');
+const Institute = require('./institute');
 
 const ImageSchema = new Schema({
   url: String,
@@ -52,13 +53,17 @@ const EventSchema = new Schema({
     default: Date.now(),
   },
   // Event Organizer
-  organization: {
-    type: Schema.Types.ObjectId,
-    ref: 'Organization',
-  },
   active: {
     type: Boolean,
     default: false,
+  },
+  institute: {
+    type: Schema.Types.ObjectId,
+    ref: 'Institute',
+  },
+  organization: {
+    type: Schema.Types.ObjectId,
+    ref: 'Organization',
   },
   participants: [
     {
