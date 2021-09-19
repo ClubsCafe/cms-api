@@ -110,7 +110,7 @@ module.exports.updateProfile = async (req, res, next) => {
 };
 
 module.exports.showProfile = async (req, res, next) => {
-  const user = await User.findOne({ username: req.params.userId })
+  const user = await User.findOne({ username: req.params.username })
     .populate('awards')
     .populate('organizations')
     .populate('events');

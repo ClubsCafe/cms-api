@@ -14,12 +14,8 @@ const upload = multer({ storage });
 
 router
   .route('/')
-  // eslint-disable-next-line consistent-return
-  .get((req, res, next) => {
-    if (req.user) return res.json(req.user);
-    const err = { statusCode: 403, message: 'you are not logged in' };
-    next(err);
-  });
+  // to get logged in user
+  .get(isLoggedIn, (req, res) => res.json(req.user));
 
 /* for getting all users list according to userType */
 router
@@ -34,7 +30,7 @@ router
 
 /* Note: userId refers to the username and not the objectId */
 router
-  .route('/users/:userId')
+  .route('/users/:username')
   /* GET request to get specific profile details */
   .get(isLoggedIn,
     catchAsync(users.showProfile));
