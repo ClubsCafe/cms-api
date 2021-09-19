@@ -28,7 +28,11 @@ passport.use(new GoogleTokenStrategy({
       email: profile.emails[0].value,
       username: req.body.username,
     });
-    await user.save();
+    try {
+      await user.save();
+    } catch (err) {
+      return done(err, null);
+    }
     return done(null, user);
   }
   return done(null, false, { message: 'Invalid email' });
