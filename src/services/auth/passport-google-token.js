@@ -1,8 +1,6 @@
 const passport = require('passport');
 const GoogleTokenStrategy = require('passport-google-token').Strategy;
 
-const logger = require('../logger');
-
 const User = require('../../models/user');
 
 const isValidEmail = (emailReg, email) => {
@@ -20,8 +18,8 @@ passport.use(new GoogleTokenStrategy({
     return done(null, user);
   }
   /* we need to check if the email is valid, for a particular institution
-    received in request body
-    Regex String will be saved in institute modal */
+        received in request body
+        Regex String will be saved in institute modal */
   const instiRegex = new RegExp('');
 
   if (isValidEmail(instiRegex, profile.emails[0].value)) {
@@ -30,13 +28,8 @@ passport.use(new GoogleTokenStrategy({
       email: profile.emails[0].value,
       username: req.body.username,
     });
-    logger.debug(user);
-    try {
-      await user.save();
-      return done(null, user);
-    } catch (err) {
-      return logger.error('Saving user failed', err);
-    }
+    await user.save();
+    return done(null, user);
   }
   return done(null, false, { message: 'Invalid email' });
 }));

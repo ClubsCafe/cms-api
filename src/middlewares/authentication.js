@@ -1,4 +1,5 @@
 /* eslint-disable func-names */
+/* eslint-disable no-unused-vars */
 /* for all the middlewares required such as isLoggenIn */
 
 const passport = require('passport');
