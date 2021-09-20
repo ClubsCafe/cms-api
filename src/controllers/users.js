@@ -1,7 +1,8 @@
 /* eslint-disable no-underscore-dangle */
 const passport = require('passport');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-/* const logger = require('../services/logger'); */
+const logger = require('../services/logger');
 const { cloudinary } = require('../services/cloudinary');
 // for managing images
 module.exports.index = async (req, res) => {
@@ -57,63 +58,9 @@ module.exports.index = async (req, res) => {
     users,
   });
 };
-// eslint-disable-next-line consistent-return
-module.exports.createUser = async (req, res, next) => {
-  try {
-    const {
-      email, username, password, name,
-    } = req.body;
-    const user = new User({ email, username, name });
-    const registeredUser = await User.register(user, password);
-    req.login(registeredUser, (err) => {
-      if (err) return next(err);
-      delete req.session.returnTo;
-      return res.status(201).json({
-        success: true,
-        user: {
-          name: registeredUser.name,
-          username: registeredUser.username,
-          email: registeredUser.email,
-        },
-      });
-    });
-  } catch (e) {
-    res.status(400).json({
-      success: false,
-      message: e.message,
-    });
-  }
-};/* async (req, res, next) => {
-  try {
-    const {
-      email, name, username, password,
-    } = req.body;
-    const user = new User({
-      email,
-      name,
-      username,
-    });
-    const registeredUser = await User.register(user, password);
-    req.login(registeredUser, (err) => {
-      // eslint-disable-next-line no-undef
-      if (err) {
-        logger.info(err);
-        return next(err);
-      }
-      logger.info('upto res.json');
-      res.json(201).json({
-        success: true,
-        user: registeredUser,
-      });
-    });
-  } catch (err) {
-    logger.info('error sent');
-    return next(err);
-  }
-}; */
 
 module.exports.loginUser = (req, res, next) => {
-  passport.authenticate('local', (err, user, info) => {
+  passport.authenticate('google-token', async (err, user, info) => {
     if (err) { return next(err); }
     if (!user) {
       return res.status(400).json({
@@ -121,20 +68,13 @@ module.exports.loginUser = (req, res, next) => {
         message: info,
       });
     }
-    // eslint-disable-next-line consistent-return
-    return req.logIn(user, (error) => {
-      if (error) { return next(error); }
-      return res.status(200).json({ success: true, user: req.user });
-    });
-  })(req, res, next);
-};
+    logger.debug('Google Auth');
 
-module.exports.logoutUser = (req, res) => {
-  req.logout();
-  return res.status(200).json({
-    success: true,
-    message: 'Logged out successfully',
-  });
+    const { username } = user;
+    const user01 = await User.findOne({ username });
+    const token = jwt.sign({ username }, process.env.JWT_SECRET);
+    return res.status(200).json({ success: true, token, user: user01 });
+  })(req, res, next);
 };
 
 module.exports.updateProfile = async (req, res, next) => {
@@ -170,7 +110,7 @@ module.exports.updateProfile = async (req, res, next) => {
 };
 
 module.exports.showProfile = async (req, res, next) => {
-  const user = await User.findOne({ username: req.params.userId })
+  const user = await User.findOne({ username: req.params.username })
     .populate('awards')
     .populate('organizations')
     .populate('events');
