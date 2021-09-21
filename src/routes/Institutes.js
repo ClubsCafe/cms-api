@@ -44,7 +44,7 @@ router
   .put(
     isLoggedIn,
     isMod,
-    upload.array('image'),
+    fileUploads,
     catchAsync(institutes.editInstitute),
   )
   /* DELETE request for deleting specific institute,
