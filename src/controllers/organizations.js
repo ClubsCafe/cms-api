@@ -53,10 +53,10 @@ module.exports.createOrganization = async (req, res, next) => {
       filename: req.files.logo[0].filename,
     };
   }
-  if (req.files.bannerImage[0]) {
+  if (req.files?.bannerImage) {
     organization.bannerImage = {
-      url: req.files.logo[0].path,
-      filename: req.files.logo[0].filename,
+      url: req.files.bannerImage[0].path,
+      filename: req.files.bannerImage[0].filename,
     };
   }
   await organization.save();
@@ -155,11 +155,11 @@ module.exports.editOrganization = async (req, res, next) => {
       filename: req.files.logo[0].filename,
     };
   }
-  if (req.files.bannerImage[0]) {
+  if (req.files?.bannerImage) {
     await cloudinary.uploader.destroy(organization.bannerImage.filename);
     organization.bannerImage = {
-      url: req.files.logo[0].path,
-      filename: req.files.logo[0].filename,
+      url: req.files.bannerImage[0].path,
+      filename: req.files.bannerImage[0].filename,
     };
   }
   await organization.save();
