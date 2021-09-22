@@ -1,4 +1,3 @@
-/* eslint-disable no-underscore-dangle */
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');

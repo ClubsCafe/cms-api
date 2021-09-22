@@ -1,4 +1,3 @@
-/* eslint-disable no-underscore-dangle */
 const { cloudinary } = require('../services/cloudinary');
 
 const Institute = require('../models/institute');

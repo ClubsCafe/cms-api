@@ -1,4 +1,3 @@
-/* eslint-disable no-underscore-dangle */
 /* eslint-disable func-names */
 /*
 As considering the hirearchy level of access

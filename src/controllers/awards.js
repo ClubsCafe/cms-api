@@ -1,4 +1,3 @@
-/* eslint-disable no-underscore-dangle */
 const { cloudinary } = require('../services/cloudinary');
 
 const Event = require('../models/event');
@@ -190,7 +189,7 @@ module.exports.deleteAward = async (req, res, next) => {
   /* removing the award from the specific event */
   await Event.findOneAndUpdate(
     { eventId: award.event },
-    { $pull: { awards: award._Id } },
+    { $pull: { awards: award._id } },
   );
   /* removing the award and its points from the users */
   await User.updateMany({ $in: { awards: award._id } },
