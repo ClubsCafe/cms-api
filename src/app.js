@@ -3,11 +3,13 @@ const port = process.env.PORT || 5000;
 
 // requiring dependencies
 const express = require('express');
+const helmet = require('helmet');
 const cors = require('cors');
 
 const app = express();
 // enabling CORS currently for all origins for development purposes
 app.use(cors());
+app.use(helmet());
 
 // for passing url-encoded body requests
 app.use(express.urlencoded({ extended: true }));
