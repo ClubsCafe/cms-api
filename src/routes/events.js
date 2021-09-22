@@ -45,7 +45,7 @@ router
     catchAsync(events.register));
 
 router
-  .route('/register')
+  .route('/deregister')
   /* POST request for deregistring from the event */
   .post(isLoggedIn,
     catchAsync(events.deregister));
