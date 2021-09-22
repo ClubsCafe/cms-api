@@ -16,12 +16,14 @@ module.exports.createInstitute = async (req, res) => {
     instituteId,
     about,
     externalUrl,
+    emailRegex,
   } = req.body;
   const institute = new Institute({
     name,
     instituteId,
     about,
     externalUrl,
+    emailRegex,
   });
   if (req.files?.logo) {
     institute.logo = {
@@ -69,6 +71,7 @@ module.exports.editInstitute = async (req, res, next) => {
     instituteId,
     about,
     externalUrl,
+    emailRegex,
   } = req.body;
   if (req.user.userType === 'mod') {
     const instituteCount = await Institute.count(
@@ -94,6 +97,7 @@ module.exports.editInstitute = async (req, res, next) => {
       instituteId,
       about,
       externalUrl,
+      emailRegex,
     },
   );
   if (!institute) {

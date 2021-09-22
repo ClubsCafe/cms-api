@@ -29,6 +29,10 @@ const InstituteSchema = new Schema({
   externalUrl: {
     type: String,
   },
+  emailRegex: {
+    type: String,
+    required: true,
+  },
   // members of the organization who will handle events.
   mods: [
     {
