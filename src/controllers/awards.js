@@ -56,7 +56,7 @@ module.exports.createAward = async (req, res, next) => {
     }
   }
   const event = Event.find({ eventId: req.params.eventId });
-  const { title, points } = req.body.award;
+  const { title, points } = req.body;
   const award = new Event(title, points);
   if (req.file) {
     award.logo = {
@@ -123,8 +123,9 @@ module.exports.editAward = async (req, res, next) => {
       return next(err);
     }
   }
+  const { title, points } = req.body;
   const award = await Award.findByIdAndUpdate(req.params.awardId, {
-    ...req.body.award,
+    title, points,
   });
   /* checks if the award exists */
   if (!award) {

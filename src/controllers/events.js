@@ -93,7 +93,7 @@ module.exports.createEvent = async (req, res, next) => {
     startDate,
     endDate,
     active,
-  } = req.body.event;
+  } = req.body;
   const event = new Event({
     name,
     eventId,
@@ -105,7 +105,7 @@ module.exports.createEvent = async (req, res, next) => {
     endDate,
     active,
   });
-  if (req.files.logo[0]) {
+  if (req.files?.logo) {
     event.logo = {
       url: req.files.logo[0].path,
       filename: req.files.logo[0].filename,
@@ -212,7 +212,7 @@ module.exports.editEvent = async (req, res, next) => {
   const {
     name, eventId, externalUrl, tags,
     bio, about, startDate, endDate, active,
-  } = req.body.events;
+  } = req.body;
   event = await Event.findOneAndUpdate({ eventId: req.params.eventId }, {
     name,
     eventId,
@@ -223,16 +223,15 @@ module.exports.editEvent = async (req, res, next) => {
     startDate,
     endDate,
     active,
-  },
-  { new: true });
-  if (req.files.logo[0]) {
+  }, { new: true });
+  if (req.files?.logo) {
     await cloudinary.uploader.destroy(event.logo.filename);
     event.logo = {
       url: req.files.logo[0].path,
       filename: req.files.logo[0].filename,
     };
   }
-  if (req.files.bannerImage[0]) {
+  if (req.files?.bannerImage) {
     await cloudinary.uploader.destroy(event.bannerImage.filename);
     event.bannerImage = {
       url: req.files.logo[0].path,

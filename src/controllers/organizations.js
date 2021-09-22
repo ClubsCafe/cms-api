@@ -21,7 +21,7 @@ module.exports.instituteIndex = async (req, res) => {
 module.exports.createOrganization = async (req, res, next) => {
   const {
     name, organizationId, externalUrl, about, bio,
-  } = req.body.organization;
+  } = req.body;
   if (req.user.userType === 'mod') {
     const instituteCount = await Institute.count(
       {
@@ -47,16 +47,16 @@ module.exports.createOrganization = async (req, res, next) => {
   });
   organization.institute = institute._id;
   institute.organizations.push(organization._id);
-  if (req.files.logo[0]) {
+  if (req.files?.logo) {
     organization.logo = {
       url: req.files.logo[0].path,
       filename: req.files.logo[0].filename,
     };
   }
-  if (req.files.bannerImage[0]) {
+  if (req.files?.bannerImage) {
     organization.bannerImage = {
-      url: req.files.logo[0].path,
-      filename: req.files.logo[0].filename,
+      url: req.files.bannerImage[0].path,
+      filename: req.files.bannerImage[0].filename,
     };
   }
   await organization.save();
@@ -91,7 +91,7 @@ module.exports.showOrganization = async (req, res, next) => {
 module.exports.editOrganization = async (req, res, next) => {
   const {
     name, organizationId, externalUrl, about, bio,
-  } = req.body.organization;
+  } = req.body;
   const institute = await Institute.findOne({ instituteId: req.params.instituteId });
   if (!institute) {
     const err = {
@@ -148,18 +148,18 @@ module.exports.editOrganization = async (req, res, next) => {
     const err = { statusCode: 404, message: 'Organization not found' };
     return next(err);
   }
-  if (req.files.logo[0]) {
+  if (req.files?.logo) {
     await cloudinary.uploader.destroy(organization.logo.filename);
     organization.logo = {
       url: req.files.logo[0].path,
       filename: req.files.logo[0].filename,
     };
   }
-  if (req.files.bannerImage[0]) {
+  if (req.files?.bannerImage) {
     await cloudinary.uploader.destroy(organization.bannerImage.filename);
     organization.bannerImage = {
-      url: req.files.logo[0].path,
-      filename: req.files.logo[0].filename,
+      url: req.files.bannerImage[0].path,
+      filename: req.files.bannerImage[0].filename,
     };
   }
   await organization.save();

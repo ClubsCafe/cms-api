@@ -8,7 +8,7 @@ mongoose.connect(dbURL, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 }).then(() => {
-  logger.info(`Mongoose connected to ${dbURL}`);
+  logger.info('Mongoose connected to Database');
 }).catch((err) => {
   logger.error(`Mongoose connection error: ${err}`);
 });

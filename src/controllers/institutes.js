@@ -17,23 +17,23 @@ module.exports.createInstitute = async (req, res) => {
     instituteId,
     about,
     externalUrl,
-  } = req.body.institute;
+  } = req.body;
   const institute = new Institute({
     name,
     instituteId,
     about,
     externalUrl,
   });
-  if (req.files.logo[0]) {
+  if (req.files?.logo) {
     institute.logo = {
       url: req.files.logo[0].path,
       filename: req.files.logo[0].filename,
     };
   }
-  if (req.files.bannerImage[0]) {
+  if (req.files?.bannerImage) {
     institute.bannerImage = {
-      url: req.files.logo[0].path,
-      filename: req.files.logo[0].filename,
+      url: req.files.bannerImage[0].path,
+      filename: req.files.bannerImage[0].filename,
     };
   }
   await institute.save();
@@ -70,7 +70,7 @@ module.exports.editInstitute = async (req, res, next) => {
     instituteId,
     about,
     externalUrl,
-  } = req.body.institute;
+  } = req.body;
   if (req.user.userType === 'mod') {
     const instituteCount = await Institute.count(
       {
@@ -101,14 +101,14 @@ module.exports.editInstitute = async (req, res, next) => {
     const err = { statusCode: 404, message: 'Institute not found' };
     return next(err);
   }
-  if (req.files.logo[0]) {
+  if (req.files?.logo) {
     await cloudinary.uploader.destroy(institute.logo.filename);
     institute.logo = {
       url: req.files.logo[0].path,
       filename: req.files.logo[0].filename,
     };
   }
-  if (req.files.bannerImage[0]) {
+  if (req.files?.bannerImage) {
     await cloudinary.uploader.destroy(institute.bannerImage.filename);
     institute.bannerImage = {
       url: req.files.logo[0].path,
