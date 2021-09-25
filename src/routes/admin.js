@@ -9,11 +9,9 @@ const router = express.Router({ mergeParams: true });
 
 /* Same management page will be given */
 /* Admin related routes */
-router.route('/users/:userId/type/')
+router.route('/users/:username/type/')
 
-/* req.body should contain the type.
-userId is the username(not the objectId of the user)
-*/
+  // req.body should contain the type.
   .put(isLoggedIn,
     isAdmin, admin.changeUserType);
 module.exports = router;

@@ -9,6 +9,7 @@ const cors = require('cors');
 const app = express();
 // enabling CORS currently for all origins for development purposes
 app.use(cors());
+// helmet for security
 app.use(helmet());
 
 // for passing url-encoded body requests
@@ -45,7 +46,6 @@ app.use('/mod', modRoutes);
 app.use('/organizations', organizationRoutes);
 app.use('/events', eventRoutes);
 
-// eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   /* setting up error message to be decalred if something throws an error */
   const { statusCode = 500, message = 'something went wrong' } = err;

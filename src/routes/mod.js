@@ -9,7 +9,7 @@ const router = express.Router({ mergeParams: true });
 
 /* Same management page will be given */
 /* AMod related routes */
-router.route('/users/:userId/type/')
+router.route('/users/:username/type/')
   .put(isLoggedIn,
     isMod,
     mod.changeUserType);

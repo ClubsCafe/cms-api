@@ -1,10 +1,7 @@
-/* eslint-disable no-unused-vars */
 const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const User = require('./user');
-const Organization = require('./organization');
 // for images aka- for cloudinary
 const ImageSchema = new Schema({
   url: String,
