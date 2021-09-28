@@ -70,9 +70,8 @@ module.exports.loginUser = (req, res, next) => {
     logger.debug('Google Auth');
 
     const { username } = user;
-    const user01 = await User.findOne({ username });
     const token = jwt.sign({ username }, process.env.JWT_SECRET);
-    return res.status(200).json({ success: true, token, user: user01 });
+    return res.status(200).json({ success: true, token, user });
   })(req, res, next);
 };
 
