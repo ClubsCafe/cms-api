@@ -40,4 +40,8 @@ router
   /* post request for logging in  */
   .post(users.loginUser);
 
+router
+  .route('/signup')
+  .post(users.signupUser);
+
 module.exports = router;

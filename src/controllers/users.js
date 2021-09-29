@@ -64,7 +64,7 @@ module.exports.loginUser = (req, res, next) => {
     if (!user) {
       return res.status(400).json({
         success: false,
-        message: info,
+        message: info.message,
       });
     }
     logger.debug('Google Auth');
@@ -72,6 +72,31 @@ module.exports.loginUser = (req, res, next) => {
     const { username } = user;
     const token = jwt.sign({ username }, process.env.JWT_SECRET);
     return res.status(200).json({ success: true, token, user });
+  })(req, res, next);
+};
+
+module.exports.signupUser = async (req, res, next) => {
+  const { username, instituteId } = req.body;
+  passport.authenticate('google-token', async (err, user, info) => {
+    if (err) { return next(err); }
+    if (user || info.oauthError) {
+      return res.status(400).json({
+        success: false,
+        message: info.message,
+      });
+    }
+    logger.debug('Google Auth Signup');
+    const email = info.emails[0].value;
+    const name = info.displayName;
+    const newUser = new User({
+      username,
+      instituteId,
+      email,
+      name,
+    });
+    await newUser.save();
+    const token = jwt.sign({ username }, process.env.JWT_SECRET);
+    return res.status(200).json({ success: true, token, user: newUser });
   })(req, res, next);
 };
 
