@@ -99,6 +99,7 @@ module.exports.editInstitute = async (req, res, next) => {
       externalUrl,
       emailRegex,
     },
+    { new: true },
   );
   if (!institute) {
     const err = { statusCode: 404, message: 'Institute not found' };
