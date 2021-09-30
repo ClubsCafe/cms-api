@@ -1,9 +1,16 @@
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const Institute = require('../models/institute');
 const logger = require('../services/logger');
 const { cloudinary } = require('../services/cloudinary');
 // for managing images
+
+const isValidEmail = (emailReg, email) => {
+  const re = new RegExp(emailReg);
+  return re.test(email);
+};
+
 module.exports.index = async (req, res) => {
   const admins = await User.find(
     { userType: 'admin' },
@@ -86,8 +93,15 @@ module.exports.signupUser = async (req, res, next) => {
       });
     }
     logger.debug('Google Auth Signup');
+    const { emailRegex } = await Institute.findOne({ instituteId }, { emailRegex: 1 });
     const email = info.emails[0].value;
     const name = info.displayName;
+
+    if (!isValidEmail(emailRegex, email)) {
+      const error = { statusCode: 400, message: 'Email not valid for Institute' };
+      return next(error);
+    }
+
     const newUser = new User({
       username,
       instituteId,
@@ -135,11 +149,13 @@ module.exports.updateProfile = async (req, res, next) => {
     }
     user.avatar = { url: req.file.path, filename: req.file.filename };
   }
+
   try {
     await user.save();
   } catch (error) {
     next(error);
   }
+
   return res.status(201).json({
     success: true,
     user,
