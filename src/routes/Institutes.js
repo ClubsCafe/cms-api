@@ -22,7 +22,7 @@ const fileUploads = upload.fields([
 
 /* using organization route(dependent routes) */
 router
-  .use('/organizations',
+  .use('/:instituteId/organizations',
     OrganizationRoutes);
 
 router
