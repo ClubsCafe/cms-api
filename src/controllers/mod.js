@@ -1,7 +1,7 @@
 const User = require('../models/user');
 
 module.exports.changeUserType = async (req, res, next) => {
-  const username = req.params.userId;
+  const { username } = req.params;
   const { userType } = req.body;
   if (userType === 'eventmanager' || userType === 'user') {
     const user = await User.findOneAndUpdate({ username }, { $set: { userType } }, { new: true });

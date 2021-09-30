@@ -1,10 +1,16 @@
-/* eslint-disable no-underscore-dangle */
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const Institute = require('../models/institute');
 const logger = require('../services/logger');
 const { cloudinary } = require('../services/cloudinary');
 // for managing images
+
+const isValidEmail = (emailReg, email) => {
+  const re = new RegExp(emailReg);
+  return re.test(email);
+};
+
 module.exports.index = async (req, res) => {
   const admins = await User.find(
     { userType: 'admin' },
@@ -65,15 +71,67 @@ module.exports.loginUser = (req, res, next) => {
     if (!user) {
       return res.status(400).json({
         success: false,
-        message: info,
+        message: info.message,
       });
     }
     logger.debug('Google Auth');
 
     const { username } = user;
-    const user01 = await User.findOne({ username });
     const token = jwt.sign({ username }, process.env.JWT_SECRET);
-    return res.status(200).json({ success: true, token, user: user01 });
+    return res.status(200).json({ success: true, token, user });
+  })(req, res, next);
+};
+
+module.exports.signupUser = async (req, res, next) => {
+  const { username, instituteId } = req.body;
+  passport.authenticate('google-token', async (err, user, info) => {
+    if (err) { return next(err); }
+    if (user || info.oauthError) {
+      return res.status(400).json({
+        success: false,
+        message: info.message,
+      });
+    }
+    logger.debug('Google Auth Signup');
+
+    const institute = await Institute.findOne({ instituteId });
+    const email = info.emails[0].value;
+    const name = info.displayName;
+
+    if (!institute?.emailRegex) {
+      const error = { statusCode: 400, message: 'Institute not found' };
+      return next(error);
+    }
+
+    const { emailRegex } = institute;
+
+    if (!isValidEmail(emailRegex, email)) {
+      const error = { statusCode: 400, message: 'Email not valid for Institute' };
+      return next(error);
+    }
+
+    const newUser = new User({
+      username,
+      institute: institute._id,
+      email,
+      name,
+    });
+
+    institute.members.push(newUser._id);
+
+    if (req.file) {
+      newUser.avatar = { url: req.file.path, filename: req.file.filename };
+    }
+
+    try {
+      await newUser.save();
+      await institute.save();
+    } catch (error) {
+      next(error);
+    }
+
+    const token = jwt.sign({ username }, process.env.JWT_SECRET);
+    return res.status(200).json({ success: true, token, user: newUser });
   })(req, res, next);
 };
 
@@ -102,7 +160,13 @@ module.exports.updateProfile = async (req, res, next) => {
     }
     user.avatar = { url: req.file.path, filename: req.file.filename };
   }
-  await user.save();
+
+  try {
+    await user.save();
+  } catch (error) {
+    next(error);
+  }
+
   return res.status(201).json({
     success: true,
     user,

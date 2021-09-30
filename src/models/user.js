@@ -1,14 +1,7 @@
-/* eslint-disable no-unused-vars */
 const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-// requiring other schemas (awards and events here)
-const Event = require('./event');
-const Award = require('./award');
-const Organization = require('./organization');
-const Institute = require('./institute');
-/* yet to be created */
 const ImageSchema = new Schema({
   url: String,
   filename: String,

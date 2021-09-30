@@ -1,10 +1,7 @@
-/* eslint-disable no-unused-vars */
 const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const User = require('./user');
-const Organization = require('./organization');
 // for images aka- for cloudinary
 const ImageSchema = new Schema({
   url: String,
@@ -28,6 +25,10 @@ const InstituteSchema = new Schema({
   },
   externalUrl: {
     type: String,
+  },
+  emailRegex: {
+    type: String,
+    required: true,
   },
   // members of the organization who will handle events.
   mods: [
