@@ -42,6 +42,7 @@ router
 
 router
   .route('/signup')
-  .post(users.signupUser);
+  .post(upload.single('avatar'),
+    users.signupUser);
 
 module.exports = router;

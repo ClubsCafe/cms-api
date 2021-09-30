@@ -94,7 +94,17 @@ module.exports.signupUser = async (req, res, next) => {
       email,
       name,
     });
-    await newUser.save();
+
+    if (req.file) {
+      newUser.avatar = { url: req.file.path, filename: req.file.filename };
+    }
+
+    try {
+      await newUser.save();
+    } catch (error) {
+      next(error);
+    }
+
     const token = jwt.sign({ username }, process.env.JWT_SECRET);
     return res.status(200).json({ success: true, token, user: newUser });
   })(req, res, next);
@@ -125,7 +135,11 @@ module.exports.updateProfile = async (req, res, next) => {
     }
     user.avatar = { url: req.file.path, filename: req.file.filename };
   }
-  await user.save();
+  try {
+    await user.save();
+  } catch (error) {
+    next(error);
+  }
   return res.status(201).json({
     success: true,
     user,
