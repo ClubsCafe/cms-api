@@ -93,9 +93,17 @@ module.exports.signupUser = async (req, res, next) => {
       });
     }
     logger.debug('Google Auth Signup');
-    const { emailRegex } = await Institute.findOne({ instituteId }, { emailRegex: 1 });
+
+    const institute = await Institute.findOne({ instituteId });
     const email = info.emails[0].value;
     const name = info.displayName;
+
+    if (!institute?.emailRegex) {
+      const error = { statusCode: 400, message: 'Institute not found' };
+      return next(error);
+    }
+
+    const { emailRegex } = institute;
 
     if (!isValidEmail(emailRegex, email)) {
       const error = { statusCode: 400, message: 'Email not valid for Institute' };
@@ -104,10 +112,12 @@ module.exports.signupUser = async (req, res, next) => {
 
     const newUser = new User({
       username,
-      instituteId,
+      institute: institute._id,
       email,
       name,
     });
+
+    institute.members.push(newUser._id);
 
     if (req.file) {
       newUser.avatar = { url: req.file.path, filename: req.file.filename };
@@ -115,6 +125,7 @@ module.exports.signupUser = async (req, res, next) => {
 
     try {
       await newUser.save();
+      await institute.save();
     } catch (error) {
       next(error);
     }
