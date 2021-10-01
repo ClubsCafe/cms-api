@@ -8,25 +8,6 @@ const Institute = require('../models/institute');
 /*  to get all the events of the organizations  a
  seperate get req will be made for all the events happening */
 
-module.exports.organizationIndex = async (req, res) => {
-  const currentOrganization = await Organization.findOne({
-    organizationId: req.params.organizationId,
-  });
-  const activeEvents = await Event.find({
-    organization: currentOrganization._id,
-    active: true,
-  });
-  const completedEvents = await Event.find({
-    organization: currentOrganization._id,
-    active: false,
-  });
-  return res.json({
-    success: true,
-    activeEvents,
-    completedEvents,
-  });
-};
-
 module.exports.index = async (req, res) => {
   const activeEvents = await Event.find({
     active: true,

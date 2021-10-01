@@ -26,10 +26,6 @@ router.use(
 
 router
   .route('/')
-  /* GET request forgetting all events of a specific organization */
-  .get(
-    events.organizationIndex,
-  )
   /* POST request for creating events for an organization */
   .post(
     isLoggedIn,

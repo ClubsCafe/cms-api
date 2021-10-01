@@ -159,44 +159,6 @@ module.exports.addMod = async (req, res, next) => {
   return next(err);
 };
 
-module.exports.addMember = async (req, res, next) => {
-  if (req.user.userType === 'mod') {
-    const instituteCount = await Institute.count(
-      {
-        instituteId: req.params.instituteId,
-        $in: { mods: req.user._id },
-      },
-    );
-    if (!instituteCount) {
-      const err = {
-        statusCode: 404,
-        message: 'Institute Not Found or the current user is not a mod of the institute',
-      };
-      return next(err);
-    }
-  }
-  const institute = await Institute.findOne({
-    instituteId: req.params.instituteId,
-  });
-  if (!institute) {
-    const err = { statusCode: 404, message: 'Institute not found' };
-    return next(err);
-  }
-  const user = await User.findOne({ username: req.body.username });
-  if (!user) {
-    const err = { statusCode: 404, message: 'User not found' };
-    return next(err);
-  }
-  user.institute = institute._id;
-  institute.members.push(user._id);
-  await user.save();
-  await institute.save();
-  return res.json({
-    success: true,
-    message: 'member added successfully to the institute',
-  });
-};
-
 module.exports.deleteInstitute = async (req, res, next) => {
   const institute = await Institute.find({
     eventId: req.params.instituteId,
