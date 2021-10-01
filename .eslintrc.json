@@ -10,7 +10,7 @@
   },
   "rules": {
     // to override any rules from airbnb styleguide, add here
-    "linebreak-style": ["error", "windows"],
+    "linebreak-style": ["error", "unix"],
     "no-underscore-dangle": ["error", { "allow": ["_id"] }],
     "no-unused-vars": ["error", { "args": "none" }]
     // reference https://eslint.org/docs/rules/
