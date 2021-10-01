@@ -7,6 +7,11 @@ const Institute = require('../models/institute');
 /* to get all the events of the organizations  a
 seperate get req will be made for all the events happening */
 module.exports.index = async (req, res) => {
+  if (req.query.instituteId) {
+    const institute = await Institute.findOne({ instittuteId: req.query.instituteId });
+    req.query.institute = institute._id;
+    delete req.query.instituteId;
+  }
   const organizations = await Organization.find(req.query);
   return res.json({ success: true, organizations });
 };
