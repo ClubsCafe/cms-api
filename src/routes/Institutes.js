@@ -63,9 +63,5 @@ router
     isAdmin,
     catchAsync(institutes.addMod));
 router
-  .route('/:instituteId/members')
-  /* POST request to add members into a institute */
-  .post(isLoggedIn,
-    isMod,
-    catchAsync(institutes.addMember));
+  .route('/:instituteId/members');
 module.exports = router;
