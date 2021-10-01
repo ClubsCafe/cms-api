@@ -7,7 +7,7 @@ const User = require('../models/user');
 /* to get all the events of the organizations  a
 seperate get req will be made for all the events happening */
 module.exports.index = async (req, res) => {
-  const institutes = await Institute.find({});
+  const institutes = await Institute.find(req.query);
   return res.json({ success: true, institutes });
 };
 module.exports.createInstitute = async (req, res) => {
