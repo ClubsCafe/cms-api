@@ -19,7 +19,7 @@ module.exports.checkmod = async (req, next) => {
   }
 };
 // eslint-disable-next-line consistent-return
-module.exports.checkeventmanagerasync = async (req, next) => {
+module.exports.checkeventmanager = async (req, next) => {
   if (req.user.userType === 'eventmanager') {
     const organizationCount = await Organization.count(
       {
