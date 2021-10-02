@@ -12,7 +12,11 @@ module.exports.index = async (req, res) => {
 };
 module.exports.createInstitute = async (req, res) => {
   const {
-    name, instituteId, about, externalUrl, emailRegex,
+    name,
+    instituteId,
+    about,
+    externalUrl,
+    emailRegex,
   } = req.body;
   const institute = new Institute({
     name,
@@ -57,27 +61,29 @@ module.exports.showInstitute = async (req, res, next) => {
     completed: true,
   });
   return res.json({
-    success: true,
-    institute,
-    activeEvents,
-    completedEvents,
+    success: true, institute, activeEvents, completedEvents,
   });
 };
 
 module.exports.editInstitute = async (req, res, next) => {
   const {
-    name, instituteId, about, externalUrl, emailRegex,
+    name,
+    instituteId,
+    about,
+    externalUrl,
+    emailRegex,
   } = req.body;
   if (req.user.userType === 'mod') {
-    const instituteCount = await Institute.count({
-      instituteId: req.params.instituteId,
-      $in: { mods: req.user._id },
-    });
+    const instituteCount = await Institute.count(
+      {
+        instituteId: req.params.instituteId,
+        $in: { mods: req.user._id },
+      },
+    );
     if (!instituteCount) {
       const err = {
         statusCode: 404,
-        message:
-          'Institute Not Found or the current user is not a mod of the institute',
+        message: 'Institute Not Found or the current user is not a mod of the institute',
       };
       return next(err);
     }
@@ -136,7 +142,9 @@ module.exports.addMod = async (req, res, next) => {
     return next(err);
   }
   const { userType } = user;
-  if (userType === 'admin' || userType === 'mod') {
+  if (
+    userType === 'admin'
+    || userType === 'mod') {
     institute.mods.push(user._id);
     await institute.save();
     res.json({
@@ -146,7 +154,7 @@ module.exports.addMod = async (req, res, next) => {
   }
   const err = {
     statusCode: 400,
-    message: "The User doesn't have minimum previleges to become a mod",
+    message: 'The User doesn\'t have minimum previleges to become a mod',
   };
   return next(err);
 };
