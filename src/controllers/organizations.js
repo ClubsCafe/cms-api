@@ -4,7 +4,14 @@ const Event = require('../models/event');
 const Organization = require('../models/organization');
 const User = require('../models/user');
 const Institute = require('../models/institute');
-/* to get all the events of the organizations  a
+
+const { checkmod, checkeventmanager } = require('../middlewares/controllers/organizations');
+/*
+Route functions below
+----------------------------------
+*/
+/*
+to get all the events of the organizations  a
 seperate get req will be made for all the events happening */
 module.exports.index = async (req, res) => {
   if (req.query.instituteId) {
@@ -20,21 +27,7 @@ module.exports.createOrganization = async (req, res, next) => {
   const {
     name, organizationId, externalUrl, about, bio,
   } = req.body;
-  if (req.user.userType === 'mod') {
-    const instituteCount = await Institute.count(
-      {
-        instituteId: req.params.instituteId,
-        $in: { mods: req.user._id },
-      },
-    );
-    if (!instituteCount) {
-      const err = {
-        statusCode: 404,
-        message: 'Institute Not Found or the current user is not a mod of the institute',
-      };
-      return next(err);
-    }
-  }
+  await checkmod(req, next);
   const institute = await Institute.findOne({ instituteId: req.params.instituteId });
   const organization = new Organization({
     name,
@@ -98,36 +91,8 @@ module.exports.editOrganization = async (req, res, next) => {
     };
     return next(err);
   }
-  if (req.user.userType === 'mod') {
-    const instituteCount = await Institute.count(
-      {
-        instituteId: req.params.instituteId,
-        $in: { mods: req.user._id },
-      },
-    );
-    if (!instituteCount) {
-      const err = {
-        statusCode: 404,
-        message: 'Institute Not Found or the current user is not a mod of the institute',
-      };
-      return next(err);
-    }
-  }
-  if (req.user.userType === 'eventmanager') {
-    const organizationCount = await Organization.count(
-      {
-        organizationId: req.params.organizationId,
-        $in: { eventmanagers: req.user._id },
-      },
-    );
-    if (!organizationCount) {
-      const err = {
-        statusCode: 404,
-        message: 'Organization Not Found or the current user is not a mod of the Organization',
-      };
-      return next(err);
-    }
-  }
+  await checkmod(req, next);
+  await checkeventmanager(req, next);
   const organization = await Organization.findOneAndUpdate(
     {
       organizationId: req.params.organizationId,
@@ -166,21 +131,7 @@ module.exports.editOrganization = async (req, res, next) => {
 
 /* To add event managers, you need to be a mod */
 module.exports.addEventManager = async (req, res, next) => {
-  if (req.user.userType === 'mod') {
-    const instituteCount = await Institute.count(
-      {
-        instituteId: req.params.instituteId,
-        $in: { mods: req.user._id },
-      },
-    );
-    if (!instituteCount) {
-      const err = {
-        statusCode: 404,
-        message: 'Institute Not Found or the current user is not a mod of the institute',
-      };
-      return next(err);
-    }
-  }
+  await checkmod(req, next);
   const user = await User.findOne({ username: req.body.username });
   const institute = await Institute.findOne({ instituteId: req.params.instituteId });
   if (!institute) {
@@ -227,36 +178,8 @@ module.exports.addEventManager = async (req, res, next) => {
 };
 
 module.exports.addMember = async (req, res, next) => {
-  if (req.user.userType === 'mod') {
-    const instituteCount = await Institute.count(
-      {
-        instituteId: req.params.instituteId,
-        $in: { mods: req.user._id },
-      },
-    );
-    if (!instituteCount) {
-      const err = {
-        statusCode: 404,
-        message: 'Institute Not Found or the current user is not a mod of the institute',
-      };
-      return next(err);
-    }
-  }
-  if (req.user.userType === 'eventmanager') {
-    const organizationCount = await Organization.count(
-      {
-        organizationId: req.params.organizationId,
-        $in: { eventmanagers: req.user._id },
-      },
-    );
-    if (!organizationCount) {
-      const err = {
-        statusCode: 404,
-        message: 'Organization Not Found or the current user is not a mod of the Organization',
-      };
-      return next(err);
-    }
-  }
+  await checkmod(req, next);
+  await checkeventmanager(req, next);
   const organization = await Organization.findOne({
     organizationId: req.params.organizationId,
   }).populate('institute');
@@ -280,21 +203,7 @@ module.exports.addMember = async (req, res, next) => {
 };
 
 module.exports.deleteOrganization = async (req, res, next) => {
-  if (req.user.userType === 'mod') {
-    const instituteCount = await Institute.count(
-      {
-        instituteId: req.params.instituteId,
-        $in: { mods: req.user._id },
-      },
-    );
-    if (!instituteCount) {
-      const err = {
-        statusCode: 404,
-        message: 'Institute Not Found or the current user is not a mod of the institute',
-      };
-      return next(err);
-    }
-  }
+  await checkmod(req, next);
   const institute = await Institute.findOne({ instituteId: req.params.instituteId });
   if (!institute) {
     const err = {
