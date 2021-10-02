@@ -191,11 +191,11 @@ module.exports.addMember = async (req, res, next) => {
     const err = { statusCode: 404, message: 'User not found' };
     return next(err);
   }
-  if (user.institute !== organization.institute) {
-    const err = { statusCode: 403, message: 'User is not a member of the institute' };
+  if (`${user.institute}` !== `${organization.institute._id}`) {
+    const err = { statusCode: 403, message: 'User Is not a member of the insititute' };
     return next(err);
   }
-  user.organization.push(organization._id);
+  user.organizations.push(organization._id);
   organization.members.push(user._id);
   await user.save();
   await organization.save();
