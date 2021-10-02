@@ -60,7 +60,7 @@ module.exports.showOrganization = async (req, res, next) => {
     organizationId: req.params.organizationId,
   })
     .populate('institute')
-    .populate('members')
+    .populate('members', '-email')
     .populate('eventmanagers');
   if (!organization) {
     const err = { statusCode: 404, message: 'Organization Not Found' };

@@ -45,7 +45,7 @@ module.exports.showInstitute = async (req, res, next) => {
   const institute = await Institute.findOne({
     instituteId: req.params.instituteId,
   })
-    .populate('members')
+    .populate('members', '-email')
     .populate('mods')
     .populate('organizations');
   if (!institute) {
