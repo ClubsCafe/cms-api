@@ -1,14 +1,14 @@
-const { cloudinary } = require("../services/cloudinary");
+const { cloudinary } = require('../services/cloudinary');
 
-const Event = require("../models/event");
-const Organization = require("../models/organization");
-const User = require("../models/user");
-const Institute = require("../models/institute");
+const Event = require('../models/event');
+const Organization = require('../models/organization');
+const User = require('../models/user');
+const Institute = require('../models/institute');
 
 const {
   checkmod,
   checkeventmanager,
-} = require("../middlewares/controllers/organizations");
+} = require('../middlewares/controllers/organizations');
 /*
 Route functions below
 ----------------------------------
@@ -29,7 +29,9 @@ module.exports.index = async (req, res) => {
 };
 
 module.exports.createOrganization = async (req, res, next) => {
-  const { name, organizationId, externalUrl, about, bio } = req.body;
+  const {
+    name, organizationId, externalUrl, about, bio,
+  } = req.body;
   await checkmod(req, next);
   const institute = await Institute.findOne({
     instituteId: req.params.instituteId,
@@ -64,11 +66,11 @@ module.exports.showOrganization = async (req, res, next) => {
   const organization = await Organization.findOne({
     organizationId: req.params.organizationId,
   })
-    .populate("institute")
-    .populate("members", "-email")
-    .populate("eventmanagers");
+    .populate('institute')
+    .populate('members', '-email')
+    .populate('eventmanagers');
   if (!organization) {
-    const err = { statusCode: 404, message: "Organization Not Found" };
+    const err = { statusCode: 404, message: 'Organization Not Found' };
     return next(err);
   }
   const activeEvents = await Event.find({
@@ -88,14 +90,16 @@ module.exports.showOrganization = async (req, res, next) => {
 };
 
 module.exports.editOrganization = async (req, res, next) => {
-  const { name, organizationId, externalUrl, about, bio } = req.body;
+  const {
+    name, organizationId, externalUrl, about, bio,
+  } = req.body;
   const institute = await Institute.findOne({
     instituteId: req.params.instituteId,
   });
   if (!institute) {
     const err = {
       statusCode: 404,
-      message: "Institute not found.",
+      message: 'Institute not found.',
     };
     return next(err);
   }
@@ -113,10 +117,10 @@ module.exports.editOrganization = async (req, res, next) => {
       bio,
       about,
     },
-    { new: true }
+    { new: true },
   );
   if (!organization) {
-    const err = { statusCode: 404, message: "Organization not found" };
+    const err = { statusCode: 404, message: 'Organization not found' };
     return next(err);
   }
   if (req.files?.logo) {
@@ -147,7 +151,7 @@ module.exports.addEventManager = async (req, res, next) => {
   if (!institute) {
     const err = {
       statusCode: 404,
-      message: "Institute not found.",
+      message: 'Institute not found.',
     };
     return next(err);
   }
@@ -162,19 +166,19 @@ module.exports.addEventManager = async (req, res, next) => {
     const err = {
       statusCode: 403,
       message:
-        "Organization not found or the user is not a member of the organization",
+        'Organization not found or the user is not a member of the organization',
     };
     return next(err);
   }
   if (!user) {
-    const err = { statusCode: 404, message: "User not found" };
+    const err = { statusCode: 404, message: 'User not found' };
     return next(err);
   }
   const { userType } = user;
   if (
-    userType === "admin" ||
-    userType === "mod" ||
-    userType === "eventmanager"
+    userType === 'admin'
+    || userType === 'mod'
+    || userType === 'eventmanager'
   ) {
     organization.eventmanagers.push(user._id);
     await user.save();
@@ -194,19 +198,19 @@ module.exports.addMember = async (req, res, next) => {
   await checkeventmanager(req, next);
   const organization = await Organization.findOne({
     organizationId: req.params.organizationId,
-  }).populate("institute");
+  }).populate('institute');
   const user = await User.findOne({
     username: req.body.username,
     $in: { organizations: organization._id },
   });
   if (!user) {
-    const err = { statusCode: 404, message: "User not found" };
+    const err = { statusCode: 404, message: 'User not found' };
     return next(err);
   }
   if (`${user.institute}` !== `${organization.institute._id}`) {
     const err = {
       statusCode: 403,
-      message: "User Is not a member of the insititute",
+      message: 'User Is not a member of the insititute',
     };
     return next(err);
   }
@@ -225,7 +229,7 @@ module.exports.deleteOrganization = async (req, res, next) => {
   if (!institute) {
     const err = {
       statusCode: 404,
-      message: "Institute not found.",
+      message: 'Institute not found.',
     };
     return next(err);
   }
@@ -234,7 +238,7 @@ module.exports.deleteOrganization = async (req, res, next) => {
     institute: institute._id,
   });
   if (!organization) {
-    const err = { statusCode: 404, message: "Organization not found" };
+    const err = { statusCode: 404, message: 'Organization not found' };
     return next(err);
   }
   await cloudinary.uploader.destroy(organization.bannerImage.filename);
@@ -242,7 +246,7 @@ module.exports.deleteOrganization = async (req, res, next) => {
   await organization.findByIdAndDelete(organization._id);
   return res.json({
     success: true,
-    message: "Organization deleted Successfully",
+    message: 'Organization deleted Successfully',
   });
 };
 
