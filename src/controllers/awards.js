@@ -1,13 +1,16 @@
+/* eslint-disable consistent-return */
 const { cloudinary } = require('../services/cloudinary');
 
 const Event = require('../models/event');
 const Award = require('../models/award');
 const User = require('../models/user');
-const Institute = require('../models/institute');
-const Organization = require('../models/organization');
+
 //  to get all the events of the organizations
 //  a seperate get req will be made for all the events happening
-
+const { checkmod, checkeventmanager, checkeventmanager2 } = require('../middlewares/controllers/awards');
+/*
+Route fumctions
+*/
 /* GETS all the awards for a particular event */
 module.exports.index = async (req, res) => {
   const currentEvent = Event.find({ eventId: req.params.eventId });
@@ -16,44 +19,8 @@ module.exports.index = async (req, res) => {
 };
 /* Creates a award for a particular event */
 module.exports.createAward = async (req, res, next) => {
-  if (req.user.userType === 'mod') {
-    const institute = await Institute.findOne(
-      {
-        instituteId: req.params.instituteId,
-        $in: { mods: req.user._id },
-      },
-    );
-    const eventCount = await Event.count({
-      eventId: req.params.eventId,
-      institute: institute._id,
-    });
-    if (!(institute.count() && eventCount)) {
-      const err = {
-        statusCode: 404,
-        message: 'Institute Not Found or the current user is not a mod of the institute or event',
-      };
-      return next(err);
-    }
-  }
-  if (req.user.userType === 'eventmanager') {
-    const organization = await Organization.findOne(
-      {
-        organizationId: req.params.organizationId,
-        $in: { eventmanagers: req.user._id },
-      },
-    );
-    const eventCount = await Event.count({
-      eventId: req.params.eventId,
-      Organization: organization._id,
-    });
-    if (!(organization.count() && eventCount)) {
-      const err = {
-        statusCode: 404,
-        message: 'Organization Not Found or the current user is not a eventmanager of the Organization',
-      };
-      return next(err);
-    }
-  }
+  await checkmod(req, next);
+  await checkeventmanager(req, next);
   const event = Event.find({ eventId: req.params.eventId });
   const { title, points } = req.body;
   const award = new Event(title, points);
@@ -83,45 +50,8 @@ module.exports.showAward = async (req, res, next) => {
 };
 /* for ediiting a specific award */
 module.exports.editAward = async (req, res, next) => {
-  if (req.user.userType === 'mod') {
-    const institute = await Institute.findOne(
-      {
-        instituteId: req.params.instituteId,
-        $in: { mods: req.user._id },
-      },
-    );
-    const eventCount = await Event.count({
-      eventId: req.params.eventId,
-      institute: institute._id,
-    });
-    if (!(institute.count() && eventCount)) {
-      const err = {
-        statusCode: 404,
-        message: 'Institute Not Found or the current user is not a mod of the institute or event',
-      };
-      return next(err);
-    }
-  }
-  if (req.user.userType === 'eventmanager') {
-    const organization = await Organization.findOne(
-      {
-        organizationId: req.params.organizationId,
-        $in: { eventmanagers: req.user._id },
-      },
-    );
-    const eventCount = await Event.count({
-      eventId: req.params.eventId,
-      Organization: organization._id,
-      $in: { awards: req.params.awardId },
-    });
-    if (!(organization.count() && eventCount)) {
-      const err = {
-        statusCode: 404,
-        message: 'Organization Not Found or the current user is not a eventmanager of the Organization',
-      };
-      return next(err);
-    }
-  }
+  await checkmod(req, next);
+  await checkeventmanager2(req, next);
   const { title, points } = req.body;
   const award = await Award.findByIdAndUpdate(req.params.awardId, {
     title, points,
@@ -141,45 +71,8 @@ module.exports.editAward = async (req, res, next) => {
 };
 
 module.exports.deleteAward = async (req, res, next) => {
-  if (req.user.userType === 'mod') {
-    const institute = await Institute.findOne(
-      {
-        instituteId: req.params.instituteId,
-        $in: { mods: req.user._id },
-      },
-    );
-    const eventCount = await Event.count({
-      eventId: req.params.eventId,
-      institute: institute._id,
-    });
-    if (!(institute.count() && eventCount)) {
-      const err = {
-        statusCode: 404,
-        message: 'Institute Not Found or the current user is not a mod of the institute or event',
-      };
-      return next(err);
-    }
-  }
-  if (req.user.userType === 'eventmanager') {
-    const organization = await Organization.findOne(
-      {
-        organizationId: req.params.organizationId,
-        $in: { eventmanagers: req.user._id },
-      },
-    );
-    const eventCount = await Event.count({
-      eventId: req.params.eventId,
-      Organization: organization._id,
-      $in: { awards: req.params.awardId },
-    });
-    if (!(organization.count() && eventCount)) {
-      const err = {
-        statusCode: 404,
-        message: 'Organization Not Found or the current user is not a eventmanager of the Organization',
-      };
-      return next(err);
-    }
-  }
+  await checkmod(req, next);
+  await checkeventmanager2(req, next);
   const award = await Award.findById(req.params.awardId);
   /* checks if the award exists */
   if (!award) {
@@ -204,45 +97,8 @@ module.exports.deleteAward = async (req, res, next) => {
 };
 
 module.exports.giveAward = async (req, res, next) => {
-  if (req.user.userType === 'mod') {
-    const institute = await Institute.findOne(
-      {
-        instituteId: req.params.instituteId,
-        $in: { mods: req.user._id },
-      },
-    );
-    const eventCount = await Event.count({
-      eventId: req.params.eventId,
-      institute: institute._id,
-    });
-    if (!(institute.count() && eventCount)) {
-      const err = {
-        statusCode: 404,
-        message: 'Institute Not Found or the current user is not a mod of the institute or event',
-      };
-      return next(err);
-    }
-  }
-  if (req.user.userType === 'eventmanager') {
-    const organization = await Organization.findOne(
-      {
-        organizationId: req.params.organizationId,
-        $in: { eventmanagers: req.user._id },
-      },
-    );
-    const eventCount = await Event.count({
-      eventId: req.params.eventId,
-      Organization: organization._id,
-      $in: { awards: req.params.awardId },
-    });
-    if (!(organization.count() && eventCount)) {
-      const err = {
-        statusCode: 404,
-        message: 'Organization Not Found or the current user is not a eventmanager of the Organization',
-      };
-      return next(err);
-    }
-  }
+  await checkmod(req, next);
+  await checkeventmanager2(req, next);
   const { winners } = req.body;
   const award = Award.findById(req.params.awardId);
   /* checks if the award exists */
