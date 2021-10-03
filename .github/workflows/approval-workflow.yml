@@ -9,5 +9,5 @@ jobs:
       env:
         APPROVALS: "2"
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        ADD_LABEL: "approved"
+        ADD_LABEL: "hacktoberfest-approved"
         REMOVE_LABEL: "awaiting%20review"
