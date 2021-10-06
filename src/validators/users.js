@@ -1,4 +1,5 @@
 const { body } = require('express-validator');
+const User = require('../models/user');
 
 module.exports.userSignupValidation = [
   body('username')
@@ -6,7 +7,12 @@ module.exports.userSignupValidation = [
     .withMessage('username cannot be empty')
     .isString()
     .isLength({ min: 1, max: 20 })
-    .withMessage('length of username should be between 1 and 20 characters'),
+    .withMessage('length of username should be between 1 and 20 characters')
+    .custom(async (val) => {
+      const user = await User.findOne({ username: val });
+      if (user) return false;
+      return true;
+    }),
   body('instituteId')
     .exists({ checkFalsy: true })
     .withMessage('instituteId cannot be empty')
