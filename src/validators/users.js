@@ -5,8 +5,8 @@ module.exports.userSignupValidation = [
     .exists({ checkFalsy: true })
     .withMessage('username cannot be empty')
     .isString()
-    .isLength({ min: 1, max: 15 })
-    .withMessage('length of username should be between 1 and 15 characters'),
+    .isLength({ min: 1, max: 20 })
+    .withMessage('length of username should be between 1 and 20 characters'),
   body('instituteId')
     .exists({ checkFalsy: true })
     .withMessage('instituteId cannot be empty')
@@ -17,8 +17,8 @@ module.exports.userSignupValidation = [
     ),
   body('email').isEmail().withMessage('please enter valid email address'),
   body('name')
-    .isLength({ min: 1, max: 25 })
-    .withMessage('length of name should be between 1 and 25 characters')
+    .isLength({ min: 1, max: 40 })
+    .withMessage('length of name should be between 1 and 40 characters')
     .isLength()
     .isString()
     .withMessage('Please enter a valid name'),
@@ -47,8 +47,8 @@ module.exports.userUpdateValidation = [
   body('dob').optional().isDate().withMessage('Enter valid Date of birth'),
   body('name')
     .optional()
-    .isLength({ min: 1, max: 25 })
-    .withMessage('length of name should be between 1 and 25 characters')
+    .isLength({ min: 1, max: 40 })
+    .withMessage('length of name should be between 1 and 40 characters')
     .isLength()
     .isString()
     .withMessage('Please enter a valid name'),
