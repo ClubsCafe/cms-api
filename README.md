@@ -53,7 +53,7 @@ Make sure to format your code before submitting a PR.
 
 ## 🤝 Contributing
 
-Contributions, issues and feature requests are welcome!<br />Feel free to check [issues page](https://github.com/NITK-KODE/cms-api/issues). You can also take a look at the [contributing guide](https://github.com/NITK\-KODE/cms-api/discussions/2).
+Contributions, issues and feature requests are welcome!<br />Feel free to check [issues page](https://github.com/NITK-KODE/cms-api/issues). You can also take a look at the [contributing guide](https://github.com/NITK-KODE/cms-api/blob/main/.github/CONTRIBUTING.MD). [Discussions](https://github.com/NITK\-KODE/cms-api/discussions/2) can be found here. 
 
 ## Show your support
 
