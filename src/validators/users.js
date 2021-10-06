@@ -15,13 +15,6 @@ module.exports.userSignupValidation = [
     .withMessage(
       'length of the instituteid should consists of maximum 8 characters.',
     ),
-  body('email').isEmail().withMessage('please enter valid email address'),
-  body('name')
-    .isLength({ min: 1, max: 40 })
-    .withMessage('length of name should be between 1 and 40 characters')
-    .isLength()
-    .isString()
-    .withMessage('Please enter a valid name'),
   body('access_token')
     .exists({ checkFalsy: true })
     .withMessage('valid access-token is required')
