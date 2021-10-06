@@ -3,6 +3,9 @@ const express = require('express');
 const router = express.Router({ mergeParams: true });
 
 const multer = require('multer');
+
+const validationResult = require('../middlewares/validationResult');
+const { InstituteValidation } = require('../validators/institutes');
 const catchAsync = require('../utilities/catchasync');
 
 const institutes = require('../controllers/institutes');
@@ -21,9 +24,7 @@ const fileUploads = upload.fields([
 ]);
 
 /* using organization route(dependent routes) */
-router
-  .use('/:instituteId/organizations',
-    OrganizationRoutes);
+router.use('/:instituteId/organizations', OrganizationRoutes);
 
 router
   .route('/')
@@ -34,6 +35,8 @@ router
     isLoggedIn,
     isAdmin,
     fileUploads,
+    InstituteValidation,
+    validationResult,
     catchAsync(institutes.createInstitute),
   );
 router
@@ -45,23 +48,18 @@ router
     isLoggedIn,
     isMod,
     fileUploads,
+    InstituteValidation,
+    validationResult,
     catchAsync(institutes.editInstitute),
   )
   /* DELETE request for deleting specific institute,
   Note that it doesn't delete sub organization.
   or it will be made to not do it but change it to a dummy
   insitute. */
-  .delete(
-    isLoggedIn,
-    isAdmin,
-    catchAsync(institutes.deleteInstitute),
-  );
+  .delete(isLoggedIn, isAdmin, catchAsync(institutes.deleteInstitute));
 router
   .route('/:instituteId/mods')
   /* POST Request to assign mods for a institute */
-  .post(isLoggedIn,
-    isAdmin,
-    catchAsync(institutes.addMod));
-router
-  .route('/:instituteId/members');
+  .post(isLoggedIn, isAdmin, catchAsync(institutes.addMod));
+router.route('/:instituteId/members');
 module.exports = router;
