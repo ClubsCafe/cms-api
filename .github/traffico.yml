@@ -18,6 +18,11 @@ labels:
     color: "#0E8A16"
     description: "Pull Request has been approved and can be merged"
     ignore: false
+  approved: 
+    name: "hacktoberfest-approved"
+    color: "#F74700"
+    description: "Pull Request has been approved for hacktoberfest"
+    ignore: false
   needsMoreApprovals: 
     name: "🌟 Needs more Approvals"
     color: "#96C823"
