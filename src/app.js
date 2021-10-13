@@ -6,16 +6,30 @@ const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
 
+
 const app = express();
 // enabling CORS currently for all origins for development purposes
 app.use(cors());
 // helmet for security
 app.use(helmet());
-
+//express-mongo-sanitie for sanitizing mongo queries
+const mongoSanitize = require('express-mongo-sanitize');
 // for passing url-encoded body requests
 app.use(express.urlencoded({ extended: true }));
 /* passing json-body requests */
 app.use(express.json());
+
+
+/*SANITIZING MONGO QUERIES*/
+// To remove data, use:
+app.use(mongoSanitize());
+
+// Or, to replace prohibited characters with _, use:
+app.use(
+  mongoSanitize({
+    replaceWith: '_',
+  }),
+);
 
 const passport = require('passport');
 const logger = require('./services/logger');
