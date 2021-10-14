@@ -6,21 +6,19 @@ const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
 
-
 const app = express();
 // enabling CORS currently for all origins for development purposes
 app.use(cors());
 // helmet for security
 app.use(helmet());
-//express-mongo-sanitie for sanitizing mongo queries
+// express-mongo-sanitie for sanitizing mongo queries
 const mongoSanitize = require('express-mongo-sanitize');
 // for passing url-encoded body requests
 app.use(express.urlencoded({ extended: true }));
 /* passing json-body requests */
 app.use(express.json());
 
-
-/*SANITIZING MONGO QUERIES*/
+/* SANITIZING MONGO QUERIES */
 // To remove data, use:
 app.use(mongoSanitize());
 
