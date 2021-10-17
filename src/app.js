@@ -5,6 +5,7 @@ const port = process.env.PORT || 5000;
 const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
+const mongoSanitize = require('express-mongo-sanitize');
 
 const app = express();
 // enabling CORS currently for all origins for development purposes
@@ -16,6 +17,8 @@ app.use(helmet());
 app.use(express.urlencoded({ extended: true }));
 /* passing json-body requests */
 app.use(express.json());
+/* sanitizing mongo queries */
+app.use(mongoSanitize());
 
 const passport = require('passport');
 const logger = require('./services/logger');
